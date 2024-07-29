@@ -1,4 +1,4 @@
-package pro100.group5;
+package backend.pro100.group5;
 
 public class Main {
     public static void main(String[] args) {
