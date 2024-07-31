@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Whiteboard.iml" filepath="$PROJECT_DIR$/.idea/Whiteboard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Whiteboard_App/Whiteboard_App.iml" filepath="$PROJECT_DIR$/Whiteboard_App/Whiteboard_App.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,3 @@
+Canvas API Notes --
+    Canvas uses both HTML and JavaScript in order to run best
+    Default height*width of the <canvas> element is 150*300 pixels
