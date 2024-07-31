@@ -12,3 +12,4 @@ Canvas API Notes --
             // All code for canvas NOT being supported is put here.
         }
     - There is a canvas grid (aka coordinate space). Normally 1 unit in the grid corresponds to 1 pixel in the canvas. The origin of the grid (0,0) is in the top left corner of the grid.
+    - I asked ChatGPT how you would approach mouse tracking using canvas, https://chatgpt.com/share/1f1b6579-8d51-4f4d-857f-ea58e29bb564
