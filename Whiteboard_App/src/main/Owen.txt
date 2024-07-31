@@ -2,3 +2,4 @@ Canvas API Notes --
     Canvas uses both HTML and JavaScript in order to run best
     Default height*width of the <canvas> element is 150*300 pixels
     IF CSS does not respect the initial 1x*2x aspect ratio of the canvas, it will appear distorted
+    Like Images and Videos, the canvas element would require an alt text to state what it is.
