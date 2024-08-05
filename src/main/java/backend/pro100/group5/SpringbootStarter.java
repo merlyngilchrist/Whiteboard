@@ -11,6 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SpringbootStarter {
+
+    /**
+     * Opens Springboot application on port 8080, view it through http://localhost:8080
+     * @param args Arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(SpringbootStarter.class, args);
     }

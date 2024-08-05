@@ -11,8 +11,13 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ApplicationStart {
+
+    /**
+     * Automatically gets called by Springboot to use index.html as the displayed html file
+     * @return The name of .html file that should open
+     */
     @GetMapping("/")
     public String index() {
-        return "index"; // This should correspond to the name of your HTML file without the extension
+        return "index"; // Connects application to "index.html
     }
 }
