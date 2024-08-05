@@ -13,3 +13,51 @@ Canvas API Notes --
         }
     - There is a canvas grid (aka coordinate space). Normally 1 unit in the grid corresponds to 1 pixel in the canvas. The origin of the grid (0,0) is in the top left corner of the grid.
     - I asked ChatGPT how you would approach mouse tracking using canvas, https://chatgpt.com/share/1f1b6579-8d51-4f4d-857f-ea58e29bb564
+    - Commands for various tools:
+        - Rectangles:
+            - fillRect(x,y,width,height) draws a filled rectangle
+            - strokeRect(x,y,width,height) draws a rectangular outline
+        - Drawing paths (aka freehand pen) takes more commands, found below:
+            - beginPath() starts a path and logs future drawing commands into the path and uses it to build the path.
+            - Any of the applicable path methods (for preloaded drawings you'd apply those here, but we will focus on the mouse down and mouse up event listener related commands)
+            - closePath() draws the path
+            - Unrelated to paths specifically but is generally useful:
+                - Any command that is similar in nature to stroke() will draw an outline of a shape
+                - Any command that is similar in nature to fill() will draw a solid shape
+                - Those can both be used to determine if a path shape is filled or outlined
+           - Paths can be used to draw more creative shapes like triangles or other non-rectangular polygons.
+           - moveTo(x,y) denotes a starting position after you beginPath()
+           - lineTo(x,y) is your generic draw a line to the listed point from your last position.
+            - Drawing circles requires paths and the arc(x,y,radius,startAngle,endAngle,counterclockwise) function. For a completed circle, the arc function would take on an appearance like this:
+                - arc(x,y,radius,0,Math.PI * 2, true/false);
+                - The x,y is NOT the starting point of the circle, and is instead the center of the circle, the radius being the radius around that point.
+                - The start and end angle determine where the circle starts and ends. Math.PI only gives a semicircle, so it is required to be Math.PI*2 for a fully connected circle.
+                - The counterclockwise boolean is near irrelevant, except for use-cases with semicircles.
+            - Using fill() on a path with an incomplete object will cut off the object and fill.
+        - In order to assign a color, you need to do the following:
+            - fillStyle = color
+            - strokeStyle = color
+            - example of uses would be as follows:
+                - context.fillStyle = "red";
+                - context.fillStyle = "#FF0000";
+                - context.fillStyle = "rgb(255, 0, 0)";
+                - context.fillStyle = "rgb(255, 0, 0,opacity percent from 0-1 (and all decimals in between))";
+                - All of the above can be done with strokeStyle
+        - Stuff for lines:
+            - lineWidth = value (self-explanatory)
+            - lineCap = type (sets the end of line appearance)
+            - lineJoin = type (sets the appearance of where two lines meet)
+            - miterLimit = value (establishes a limit on the miter when two lines join at a sharp angle, to let you control how thick the junction becomes)
+            - getLineDash() (returns the current line dash pattern array)
+            - setLineDash(segments) (sets the line dash pattern)
+            - lineDashOffset = value (specifies line dash starting point)
+        - Text:
+            - fillText(text, x, y [, maxWidth])
+                - Fills a given text at x,y with an optional maximum width on the draw
+            - font = value
+            - textAlign = value
+            - textBaseline = value (only really important for non-standard alphanumeric text)
+            - direction = value
+        - Saving and Loading:
+            - save()
+            - restore()
