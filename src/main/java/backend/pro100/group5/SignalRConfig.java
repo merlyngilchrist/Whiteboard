@@ -8,9 +8,10 @@ import com.azure.messaging.webpubsub.WebPubSubServiceClientBuilder;
 @Configuration
 public class SignalRConfig {
 
-    private static final String CONNECTION_STRING = "Endpoint=https://whiteboard.service.signalr.net;AccessKey=Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=;Version=1.0;";
-    private static final String HUB_NAME = "whiteboard";
+    //private static final String CONNECTION_STRING = "Endpoint=https://whiteboard.service.signalr.net;AccessKey=Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=;Version=1.0;";
+    //private static final String HUB_NAME = "whiteboard";
 
+    /*
     @Bean
     public WebPubSubServiceClient webPubSubServiceClient(){
         return new WebPubSubServiceClientBuilder()
@@ -18,5 +19,7 @@ public class SignalRConfig {
                 .hub(HUB_NAME)
                 .buildClient();
     }
+
+     */
 
 }

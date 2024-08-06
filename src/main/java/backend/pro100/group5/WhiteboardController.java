@@ -15,16 +15,18 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RestController
-@RequestMapping("/api/whiteboard")
+//@RestController
+//@RequestMapping("/api/whiteboard")
 public class WhiteboardController {
 
+    /*
     @Autowired
     private WebPubSubServiceClient webPubSubServiceClient;
 
@@ -43,6 +45,8 @@ public class WhiteboardController {
         response.put("accessToken", token.getToken());
         return response;
     }
+
+     */
 
 
 
@@ -67,8 +71,9 @@ public class WhiteboardController {
     }
 
 
-    @PostMapping("/hateButtonClicked")
-    public Map<String, String> handleButtonClick() {
+    @PostMapping("/hate-Button-Clicked")
+    @ResponseBody
+    public Map<String, String> handleButtonClicked() {
         // Logic to handle button click
         System.out.println("Hate has been sent!");
 
