@@ -2,6 +2,12 @@ package backend.pro100.group5;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class WhiteboardController {
@@ -13,5 +19,28 @@ public class WhiteboardController {
     @GetMapping("/")
     public String index() {
         return "index"; // Connects application to "index.html
+    }
+
+    /**
+     * Automatically called when a button/form with that action tag
+     * is clicked.
+     * @return Redirects the user back to the index page
+     */
+    @PostMapping("/canvas")
+    public ModelAndView goToCanvasButtonClicked() {
+        System.out.println("Button was clicked!");
+        return new ModelAndView("canvas");
+    }
+
+
+    @PostMapping("/hateButtonClicked")
+    public Map<String, String> handleButtonClick() {
+        // Logic to handle button click
+        System.out.println("Hate has been sent!");
+
+        // Return a JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Hate was sent!");
+        return response;
     }
 }

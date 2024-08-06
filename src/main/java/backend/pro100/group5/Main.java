@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Main {
 
     /**
-     * Opens Springboot application on port 8080, view it through http://localhost:8080
+     * Opens Springboot application on port 8080, view it through "http://localhost:8080"
      * @param args Arguments
      */
     public static void main(String[] args) {
