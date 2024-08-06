@@ -1,3 +1,4 @@
+src = "https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"
 async function getSignalRInfo(){
     const response = await fetch('/api/whiteboard/negotiate');
     return await response.json();
