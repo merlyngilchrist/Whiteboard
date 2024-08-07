@@ -23,22 +23,26 @@ connection.start().catch(err => console.error(err));
 
 canvas.addEventListener("mousedown", (event) =>{
     drawing = true;
-    connection.invoke("Draw", event.offsetX, event.offsetY, "start").catch(err => console.error(err));
+    sendDrawing(event.offsetX, event.offsetY, "start");
 });
 
 canvas.addEventListener("mousedown", (event) =>{
     if (drawing){
-        connection.invoke("Draw", event.offsetX, event.offsetY, "draw").catch(err => console.error(err));
+        sendDrawing(event.offsetX, event.offsetY, 'draw');
     }
 });
 
 canvas.addEventListener("mouseup", () =>{
     if (drawing){
         drawing = false;
-        connection.invoke("Draw", 0, 0, "end").catch(err => console.error(err));
+        sendDrawing(0,0, "end");
     }
 });
 
 function sendDrawing(x, y, action){
-    connection.invoke("Draw", x, y, action).catch(err => console.error(err));
+    fetch("/draw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({x, y, action: ""})
+    }).catch(err => console.error("Error sending drawing data:", err));
 }

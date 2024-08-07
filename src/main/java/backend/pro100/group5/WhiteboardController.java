@@ -21,16 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RestController
 public class WhiteboardController {
-
-   @RequestMapping(value = "/draw", method = RequestMethod.POST)
-   public void draw(@RequestParam("x") int x, @RequestParam("y") int y, @RequestParam("action") String action){
-       //send drawing data to signalr clients
-       //forward this information to websocket clients
-   }
-
-
 
     /**
      * Automatically gets called by Springboot to use index.html as the displayed html file
