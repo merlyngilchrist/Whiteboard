@@ -1,8 +1,8 @@
 body {
     background-color: azure;
 }
-canvas{
-    border: black;
-    border-style: solid;
-    align-self: center;
+#whiteboard{
+    border: 1px solid black;
+    min-width: 600px;
+    min-height: 300px;
 }
