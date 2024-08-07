@@ -1,6 +1,15 @@
 const canvas = document.getElementById("whiteboard");
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
+    // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    const devicePixelRatio = window.devicePixelRatio;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * devicePixelRatio;
+    canvas.height = rect.height * devicePixelRatio;
+    context.scale(devicePixelRatio,devicePixelRatio);
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+    // end of Mozilla dev code
     let drawing = false;
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
@@ -20,12 +29,8 @@ if (canvas.getContext) {
         context.lineCap = 'round';
         context.strokeStyle = 'black';
 
-        const rect = canvas.getBoundingClientRect();
-        // the creation and implementation of scaleX and scaleY i found from a StackOverflow post: https://stackoverflow.com/a/17130415
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = (event.clientX - rect.left) * scaleX;
-        const y = (event.clientY - rect.top) * scaleY;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
         context.lineTo(x,y);
         context.stroke();
