@@ -21,8 +21,11 @@ if (canvas.getContext) {
         context.strokeStyle = 'black';
 
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        // the creation and implementation of scaleX and scaleY i found from a StackOverflow post: https://stackoverflow.com/a/17130415
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
 
         context.lineTo(x,y);
         context.stroke();
