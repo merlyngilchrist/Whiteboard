@@ -1,62 +1,44 @@
-src = "https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"
-async function getSignalRInfo(){
-    const response = await fetch('/api/whiteboard/negotiate');
-    return await response.json();
-}
+src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.7/signalr.min.js"
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
 
-getSignalRInfo().then(info => {
-    const connection = new signalR.HubConnectionBuilder()
-        .withurl(info.url, {accessTokenFactory: () => info.accessToken})
-        .build();
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://placeholdername.azurewebsites.net/hubs/whiteboard")
+    .build();
 
-    connection.on("ReceiveMessage", function (message) {
-        const data = JSON.parse(message);
-        drawOnCanvas(data);
-    });
-
-    connection.start().catch(function (err){
-        return console.error(err.toString());
-    });
-
-    const canvas = document.getElementById('whiteboard');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-
-    canvas.addEventListener("mousedown", function (event){
-        drawing = true;
+connection.on("ReceiveDrawing", (x, y, action) => {
+    if (action === "start"){
         ctx.beginPath();
-        ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-    });
-
-    canvas.addEventListener("mousemove", function (event){
-        if(drawing){
-            const x = event.clientX - canvas.offsetLeft;
-            const y = event.clientY - canvas.offsetTop;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            const message = JSON.stringify({x, y, type: 'draw'});
-            fetch('/api/whiteboard/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: message
-            });
-        }
-    });
-
-    canvas.addEventListener("mouseup", function (){
-        drawing = false;
-    });
-
-    canvas.addEventListener('mouseout', function (){
-        drawing = false;
-    });
-
-    function drawOnCanvas(data){
-        if (data.type === 'draw'){
-            ctx.lineTo(data.x, data.y);
-            ctx.stroke();
-        }
+        ctx.moveTo(x, y);
+    }else if (action === "draw"){
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    }else if (action === "end"){
+        ctx.closePath()
     }
 });
+
+connection.start().catch(err => console.error(err));
+
+canvas.addEventListener("mousedown", (event) =>{
+    drawing = true;
+    connection.invoke("Draw", event.offsetX, event.offsetY, "start").catch(err => console.error(err));
+});
+
+canvas.addEventListener("mousedown", (event) =>{
+    if (drawing){
+        connection.invoke("Draw", event.offsetX, event.offsetY, "draw").catch(err => console.error(err));
+    }
+});
+
+canvas.addEventListener("mouseup", () =>{
+    if (drawing){
+        drawing = false;
+        connection.invoke("Draw", 0, 0, "end").catch(err => console.error(err));
+    }
+});
+
+function sendDrawing(x, y, action){
+    connection.invoke("Draw", x, y, action).catch(err => console.error(err));
+}
