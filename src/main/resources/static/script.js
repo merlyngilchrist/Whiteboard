@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 let drawing = false;
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://placeholdername.azurewebsites.net/hubs/whiteboard") //TODO: Insert non-placeholder url
+    .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
     .build();
 
 connection.on("ReceiveDrawing", (x, y, action) => {
