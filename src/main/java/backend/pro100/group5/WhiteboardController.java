@@ -1,24 +1,13 @@
 package backend.pro100.group5;
 
-import com.azure.messaging.webpubsub.WebPubSubServiceClient;
-import com.azure.messaging.webpubsub.models.GetClientAccessTokenOptions;
-import com.azure.messaging.webpubsub.models.WebPubSubClientAccessToken;
-import com.azure.messaging.webpubsub.models.WebPubSubContentType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class WhiteboardController {
@@ -31,6 +20,14 @@ public class WhiteboardController {
     public String index() {
         return "index"; // Connects application to "index.html
     }
+
+
+   @RequestMapping(value = "/draw", method = RequestMethod.POST)
+   public void draw(@RequestParam("x") int x, @RequestParam("y") int y, @RequestParam("action") String action){
+       //send drawing data to signalr clients
+       //forward this information to websocket clients
+   }
+
 
     /**
      * Automatically called when a button/form with that action tag

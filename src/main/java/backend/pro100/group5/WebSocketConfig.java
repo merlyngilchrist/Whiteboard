@@ -1,3 +1,9 @@
+/**
+ * @author jsandland
+ * @createdOn 8/7/2024 at 10:32 AM
+ * @projectName Whiteboard
+ * @packageName backend.pro100.group5;
+ */
 package backend.pro100.group5;
 
 import org.springframework.context.annotation.Configuration;
@@ -15,3 +21,4 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
 }
+
