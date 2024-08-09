@@ -41,7 +41,7 @@ if (canvas.getContext) {
 /*
     Sends hate to us lowly developers
  */
-function hateSent() {
+function () {
     fetch('/hateButtonClicked', {
         method: 'POST',
         headers: {
@@ -54,3 +54,4 @@ function hateSent() {
         })
         .catch(error => console.error('Error:', error));
 }
+

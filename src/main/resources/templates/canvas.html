@@ -4,12 +4,16 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pen Together</title>
-        <link rel="stylesheet" href="/canvas.css">
-        <script src="/canvas.js" defer></script>
+        <link rel="stylesheet" href="/css/canvas.css">
+        <script src="/js/canvas.js" defer></script>
     </head>
     <body>
         <canvas id="whiteboard" alt="That's weird, a canvas should be here" class="fullscreen"></canvas>
-        <button type="button" onclick="selectPenTool()" class="selectedTool" style="top: 45%">pen</button>
-        <button type="button" onclick="selectOtherTool()" class="unselectedTool" style="top: 55%">other</button>
+        <button type="button" onclick="selectPenTool()" class="selectedTool" style="top: 40%">
+            <img src="/images/selectedPen.jpg" alt="Selected Pen">
+        </button>
+        <button type="button" onclick="selectOtherTool()" class="unselectedTool" style="top: 50%">
+            other
+        </button>
     </body>
 </html>

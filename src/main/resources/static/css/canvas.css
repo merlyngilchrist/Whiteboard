@@ -35,8 +35,17 @@ button {
     border-top-right-radius: 30%;
     position: fixed;
     left: 0;
-    width: 80px;
+    width: 90px;
     height: 10%;
+}
+
+button img {
+    display: block;
+    height: auto;
+    width: auto;
+    max-height: 95%;
+    border-top-right-radius: 30%;
+    border-bottom-right-radius: 30%;
 }
 
 .selectedTool {
