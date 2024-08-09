@@ -13,7 +13,8 @@ if (canvas.getContext) {
     let drawing = false;
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
-    canvas.addEventListener('mousemove',draw)
+    canvas.addEventListener('mousemove',draw);
+    changeSize(5);
 
     function startDrawing(event) {
         drawing = true;
@@ -25,9 +26,6 @@ if (canvas.getContext) {
     }
     function draw(event) {
         if (!drawing) return;
-        context.lineWidth = 5;
-        context.lineCap = 'round';
-        context.strokeStyle = 'black';
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -45,6 +43,9 @@ if (canvas.getContext) {
 
     // Change size of pen based on parameter
     function changeSize(size) {
+        if (size < 0){
+            size = 3;
+        }
         context.lineWidth = size;
     }
 }
@@ -52,12 +53,14 @@ if (canvas.getContext) {
 function selectPenTool() {
     select("penButton", true);
     select("eraserButton", false);
+    changeColor("black");
 }
 
 
 function selectEraserTool() {
     select("eraserButton", true);
     select("penButton", false);
+    changeColor("white");
 }
 
 function select(buttonID, selected) {
