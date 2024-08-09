@@ -15,7 +15,10 @@ if (canvas.getContext) {
     let drawing = false;
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
-    canvas.addEventListener('mousemove',draw)
+    canvas.addEventListener('mousemove',draw);
+    context.lineWidth = 5;
+    context.lineCap = 'round';
+    context.strokeStyle = 'black';
 
     // Sets the state of the page to drawing when a mouse is clicked and held down.
     function startDrawing(event) {
@@ -32,9 +35,6 @@ if (canvas.getContext) {
     // The default pen settings as well as following the user's mouse when drawing
     function draw(event) {
         if (!drawing) return;
-        context.lineWidth = 5;
-        context.lineCap = 'round';
-        context.strokeStyle = 'black';
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -43,5 +43,15 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
+    }
+
+    // Change color based on parameter
+    function changeColor(String){
+        context.strokeStyle = String;
+    }
+
+    // Change size of pen based on parameter
+    function changeSize(int) {
+        context.lineWidth = int;
     }
 }
