@@ -9,11 +9,11 @@
     </head>
     <body>
         <canvas id="whiteboard" alt="That's weird, a canvas should be here" class="fullscreen"></canvas>
-        <button type="button" onclick="selectPenTool()" class="selectedTool" style="top: 40%">
-            <img src="/images/selectedPen.jpg" alt="Selected Pen">
+        <button type="button" onclick="selectPenTool()" class="selectedTool" id="penButton">
+            <img src="/images/pen.png" alt="Selected Pen">
         </button>
-        <button type="button" onclick="selectOtherTool()" class="unselectedTool" style="top: 50%">
-            other
+        <button type="button" onclick="selectEraserTool()" class="unselectedTool" id="eraserButton">
+            <img src="/images/eraser.png" alt="Eraser tool">
         </button>
     </body>
     <footer>

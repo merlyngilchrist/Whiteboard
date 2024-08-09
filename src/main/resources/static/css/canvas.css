@@ -35,21 +35,36 @@ button {
     border-top-right-radius: 30%;
     position: fixed;
     left: 0;
-    width: 90px;
-    height: 10%;
+    width: 60px;
+    height: 6%;
 }
 
 button img {
     display: block;
     height: auto;
     width: auto;
-    max-height: 95%;
+    max-height: 90%;
     border-top-right-radius: 30%;
     border-bottom-right-radius: 30%;
+    pointer-events: none;
+    user-select: none;
+}
+
+#penButton {
+    top: 44%;
+}
+
+#eraserButton {
+    top: 50%;
 }
 
 .selectedTool {
     background-color: #333333;
+}
+
+.selectedTool img {
+    -webkit-filter:invert(100%);
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
 }
 
 .unselectedTool {
