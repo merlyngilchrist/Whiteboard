@@ -41,7 +41,7 @@ if (canvas.getContext) {
 /*
     Sends hate to us lowly developers
  */
-function selectPenTool() {
+function () {
     fetch('/hateButtonClicked', {
         method: 'POST',
         headers: {
