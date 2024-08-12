@@ -31,8 +31,6 @@ body {
 
 button {
     border: 1px solid black;
-    border-bottom-right-radius: 30%;
-    border-top-right-radius: 30%;
     position: fixed;
     left: 0;
     width: 60px;
@@ -44,14 +42,13 @@ button img {
     height: auto;
     width: auto;
     max-height: 90%;
-    border-top-right-radius: 30%;
-    border-bottom-right-radius: 30%;
     pointer-events: none;
     user-select: none;
 }
 
 #penButton {
     top: 26%;
+    border-top-right-radius: 30%;
 }
 
 #eraserButton {
@@ -67,11 +64,13 @@ button img {
 }
 
 #squareButton {
-    top: 50%;
+    /* Theres a 0.1% gap in the spacing for some reason */
+    top: 49.9%;
 }
 
 #triangleButton {
-    top: 56%;
+    top: 55.9%;
+    border-bottom-right-radius: 30%;
 }
 
 .selectedTool {
@@ -83,46 +82,25 @@ button img {
     filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
 }
 
+#undoButton, #redoButton {
+    bottom: 0px;
+}
+
+#undoButton {
+
+}
+
+#redoButton {
+    left: 60px;
+    border-top-right-radius: 30%;
+}
+
+.disabled {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+}
+
 .unselectedTool {
     background-color: white;
-}
-
-
-/* CSS from https://www.w3schools.com/howto/howto_js_rangeslider.asp */
-
-.slidecontainer {
-    width: 20%; /* Width of the outside container */
-}
-
-/* The slider itself */
-.slider {
-    -webkit-appearance: none;  /* Override default CSS styles */
-    appearance: none;
-    width: 100%; /* Full-width */
-    height: 25px; /* Specified height */
-    background: #d3d3d3; /* Grey background */
-    outline: none; /* Remove outline */
-    opacity: 1;
-}
-
-/* Mouse-over effects */
-.slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
-}
-
-/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none; /* Override default look */
-    appearance: none;
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    background: #04AA6D; /* Green background */
-    cursor: pointer; /* Cursor on hover */
-}
-
-.slider::-moz-range-thumb {
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    background: #04AA6D; /* Green background */
-    cursor: pointer; /* Cursor on hover */
 }

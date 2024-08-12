@@ -8,24 +8,38 @@
         <script src="/js/canvas.js" defer></script>
     </head>
     <body>
-        <canvas id="whiteboard" alt="That's weird, a canvas should be here" class="fullscreen"></canvas>
+        <canvas id="whiteboard" alt="Drawing canvas" class="fullscreen"></canvas>
+        <!-- Pen button -->
         <button type="button" onclick="selectPenTool()" class="selectedTool" id="penButton">
             <img src="/images/pen.png" alt="Pen Tool">
         </button>
+        <!-- Eraser button -->
         <button type="button" onclick="selectEraserTool()" class="unselectedTool" id="eraserButton">
             <img src="/images/eraser.png" alt="Eraser tool">
         </button>
-        <button type="button" onclick="selectFillTool()" class="unselectedTool" id="fillButton">
-            <img src="/images/paint-bucket.png" alt="Paint Bucket Tool">
-        </button>
-        <button type="button" onclick="" class="unselectedTool" id="circleButton">
+        <!-- Circle button -->
+        <button type="button" onclick="selectShapeTool('circle')" class="unselectedTool" id="circleButton">
             <img src="/images/circle.png" alt="Circle Tool">
         </button>
-        <button type="button" onclick="" class="unselectedTool" id="squareButton">
+        <!-- Square button -->
+        <button type="button" onclick="selectShapeTool('square')" class="unselectedTool" id="squareButton">
             <img src="/images/square.png" alt="Square Tool">
         </button>
-        <button type="button" onclick="" class="unselectedTool" id="triangleButton">
+        <!-- Triangle button -->
+        <button type="button" onclick="selectShapeTool('triangle')" class="unselectedTool" id="triangleButton">
             <img src="/images/triangle.png" alt="Triangle Tool">
+        </button>
+        <!-- Fill button -->
+        <button type="button" onclick="selectFillTool()" class="unselectedTool" id="fillButton">
+            <img src="/images/paint-bucket.png" alt="Fill tool">
+        </button>
+        <!-- Undo button -->
+        <button type="button" onclick="undo()" class="unselectedTool" id="undoButton">
+            <img src="/images/undo.png" alt="Undo">
+        </button>
+        <!-- Redo button -->
+        <button type="button" onclick="redo()" class="unselectedTool" id="redoButton">
+            <img src="/images/redo.png" alt="Redo">
         </button>
     </body>
     <footer>
