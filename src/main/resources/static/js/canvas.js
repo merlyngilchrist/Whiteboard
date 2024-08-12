@@ -1,4 +1,9 @@
 const canvas = document.getElementById("whiteboard");
+
+let penSize = 5;
+let penColor;
+let addedEraserSize = 5;
+
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
     // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
@@ -11,7 +16,6 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
-    let penSize = 5;
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
     canvas.addEventListener('mousemove',draw);
@@ -24,6 +28,7 @@ if (canvas.getContext) {
         }
     });
     changeSize(penSize);
+    context.lineCap = "round";
 
     function startDrawing(event) {
         drawing = true;
@@ -47,16 +52,18 @@ if (canvas.getContext) {
 
     // Change color based on parameter
     function changeColor(color) {
+        penColor = color;
         context.strokeStyle = color;
+
     }
 
     // Change size of pen based on parameter
     function changeSize(size) {
-        if (size < 0){
-            size = 1;
+        if (size < 3){
+            size = 3;
         }
-        if (size > 15) {
-            size = 15;
+        if (size > 20) {
+            size = 20;
         }
         penSize = size;
         context.lineWidth = size;
