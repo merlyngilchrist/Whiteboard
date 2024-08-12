@@ -26,7 +26,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
     canvas.addEventListener('mousemove',draw);
-    canvas.addEventListener('wheel',function(event){
+    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
             changeSize(++penSize);

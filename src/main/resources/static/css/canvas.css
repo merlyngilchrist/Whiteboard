@@ -51,11 +51,27 @@ button img {
 }
 
 #penButton {
-    top: 44%;
+    top: 26%;
 }
 
 #eraserButton {
+    top: 32%;
+}
+
+#fillButton {
+    top: 38%;
+}
+
+#circleButton {
+    top: 44%;
+}
+
+#squareButton {
     top: 50%;
+}
+
+#triangleButton {
+    top: 56%;
 }
 
 .selectedTool {
