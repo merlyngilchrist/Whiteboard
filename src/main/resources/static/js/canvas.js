@@ -92,6 +92,14 @@ function selectFillTool() {
     select("",true)
 }
 
+function selectPenSizeUp() {
+
+}
+
+function selectPenSizeDown() {
+
+}
+
 function select(buttonID, selected) {
     if (selected) {
         document.getElementById(buttonID).classList.add("selectedTool");
