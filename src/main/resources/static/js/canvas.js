@@ -11,10 +11,19 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
+    let penSize = 5;
     canvas.addEventListener('mousedown',startDrawing);
     canvas.addEventListener('mouseup',stopDrawing);
     canvas.addEventListener('mousemove',draw);
-    changeSize(5);
+    canvas.addEventListener('wheel',function(event){
+        event.preventDefault()
+        if (event.deltaY < 0){
+            changeSize(++penSize);
+        } else {
+            changeSize(--penSize);
+        }
+    });
+    changeSize(penSize);
 
     function startDrawing(event) {
         drawing = true;
@@ -44,8 +53,12 @@ if (canvas.getContext) {
     // Change size of pen based on parameter
     function changeSize(size) {
         if (size < 0){
-            size = 3;
+            size = 1;
         }
+        if (size > 15) {
+            size = 15;
+        }
+        penSize = size;
         context.lineWidth = size;
     }
 }
@@ -61,6 +74,22 @@ function selectEraserTool() {
     select("eraserButton", true);
     select("penButton", false);
     changeColor("white");
+}
+
+function selectUndo() {
+
+}
+
+function selectRedo() {
+
+}
+
+function selectColorPicker() {
+    select("",true)
+}
+
+function selectFillTool() {
+    select("",true)
 }
 
 function select(buttonID, selected) {
