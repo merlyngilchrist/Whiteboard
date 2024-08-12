@@ -29,7 +29,7 @@ public class WhiteboardController {
      */
     @PostMapping("/canvas")
     public ModelAndView goToCanvasButtonClicked() {
-        System.out.println("Button was clicked!");
+        System.out.println("Canvas started!");
         return new ModelAndView("canvas");
     }
 

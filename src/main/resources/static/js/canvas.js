@@ -3,6 +3,13 @@ const canvas = document.getElementById("whiteboard");
 let penSize = 5;
 let penColor;
 let addedEraserSize = 5;
+let buttons = [
+    "penButton",
+    "eraserButton",
+    "fillButton",
+    "undoButton",
+    "redoButton"
+];
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -71,15 +78,13 @@ if (canvas.getContext) {
 }
 
 function selectPenTool() {
-    select("penButton", true);
-    select("eraserButton", false);
+    select("penButton");
     changeColor("black");
 }
 
 
 function selectEraserTool() {
-    select("eraserButton", true);
-    select("penButton", false);
+    select("eraserButton");
     changeColor("white");
 }
 
@@ -92,11 +97,11 @@ function selectRedo() {
 }
 
 function selectColorPicker() {
-    select("",true)
+
 }
 
 function selectFillTool() {
-    select("",true)
+
 }
 
 function selectPenSizeUp() {
@@ -107,14 +112,15 @@ function selectPenSizeDown() {
 
 }
 
-function select(buttonID, selected) {
-    if (selected) {
-        document.getElementById(buttonID).classList.add("selectedTool");
-        document.getElementById(buttonID).classList.remove("unselectedTool");
-    } else {
-        document.getElementById(buttonID).classList.add("unselectedTool");
-        document.getElementById(buttonID).classList.remove("selectedTool");
-    }
-
+function select(buttonID) {
+    buttons.forEach(button => {
+        if (buttonID === button) {
+            document.getElementById(button).classList.add("selectedTool");
+            document.getElementById(button).classList.remove("unselectedTool");
+        } else {
+            document.getElementById(button).classList.add("unselectedTool");
+            document.getElementById(button).classList.remove("selectedTool");
+        }
+    });
 }
 
