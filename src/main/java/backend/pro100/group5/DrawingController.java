@@ -13,16 +13,18 @@ import java.io.IOException;
 @RestController
 public class DrawingController {
 
-    private static final String SIGNALR_URL = "whiteboard.service.signalr.net";
-    private static final String HUB_NAME = "whiteboard";
-    private static final String ACCESS_KEY = "Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=";
+
     private static final OkHttpClient client = new OkHttpClient();
 
     @PostMapping("/draw")
     public void draw(@RequestBody DrawingData drawingData){
         String message = convertDrawingDataToMessage(drawingData);
+        try {
         forwardToSignalR(message);
-        forwardToWebSocketClients(message);
+        }catch (Exception e){
+            System.err.println("Error forwarding message: " + e.getMessage());
+        }
+//        forwardToWebSocketClients(message);
     }
 
     private String convertDrawingDataToMessage(DrawingData drawingData){
@@ -31,8 +33,8 @@ public class DrawingController {
 
     private void forwardToSignalR(String message){
         //Implement the logic to send the message to Azure SignalR Service
-        String url = SIGNALR_URL + "/api/v1/hubs/" + HUB_NAME + "/messages";
-        String token = SignalRTokenGenerator.generateAccessToken(SIGNALR_URL, ACCESS_KEY);
+        String url = "Endpoint=https://whiteboard.service.signalr.net/api/v1/hubs/whiteboard/messages";
+        String token = SignalRTokenGenerator.generateAccessToken("https://whiteboard.service.signalr.net", "Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=");
 
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         okhttp3.RequestBody body = okhttp3.RequestBody.create(message, JSON);
@@ -42,30 +44,23 @@ public class DrawingController {
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
+        try (Response response = client.newCall(request).execute()){
+            if (!response.isSuccessful()){
+                throw new IOException("Unexpected code " + response);
             }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()){
-                    throw new IOException("Unexpected code" + response);
-                }
-                System.out.println("Message sent to SignalR: " + message);
-            }
-        });
-    }
-
-    private void forwardToWebSocketClients(String message){
-        for (WebSocketSession session : SessionManager.getSessions()){
-            try {
-                session.sendMessage(new TextMessage(message));
-            } catch (IOException e){
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
+//    private void forwardToWebSocketClients(String message){
+//        for (WebSocketSession session : SessionManager.getSessions()){
+//            try {
+//                session.sendMessage(new TextMessage(message));
+//            } catch (IOException e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 }

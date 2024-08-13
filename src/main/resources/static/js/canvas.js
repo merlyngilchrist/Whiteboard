@@ -14,6 +14,19 @@ let buttons = [
     "triangleButton"
 ];
 
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
+    .build();
+
+connection.on("ReceiveDrawing", (x, y, action) => {
+    drawFromServer(x, y, action);
+});
+
+connection.start().then(() => {
+    joinSession();
+}).catch(err => console.error(err));
+
+
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
     // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
@@ -43,10 +56,12 @@ if (canvas.getContext) {
     function startDrawing(event) {
         drawing = true;
         draw(event);
+        sendDrawing(event, "start");
     }
     function stopDrawing() {
         drawing = false;
         context.beginPath();
+        sendDrawing({clientX: 0, clientY: 0}, "end");
     }
     function draw(event) {
         if (!drawing) return;
@@ -58,6 +73,14 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
+
+        sendDrawing(event, "draw");
+    }
+
+    function sendDrawing(event, action){
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
     // Change color based on parameter

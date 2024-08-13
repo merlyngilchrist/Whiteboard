@@ -1,0 +1,39 @@
+azure:
+  signalr:
+    url: wss://whiteboard.service.signalr.net
+    access-key: Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=
+    hub-name: whiteboard
+
+server:
+  port: 8080 #Port the application runs on
+
+spring:
+  application:
+    name: whiteboard-app #Application name
+
+  mvc:
+    async:
+      request-timeout: 30000 #Increase timeout for longer running requests if neccessary
+
+  websocket:
+    message-broker:
+      enabled: false #Disabled Spring's built-in message broker since we're using SignalR directly
+
+signalr:
+  url: "https://whiteboard.service.signalr.net" #URL for SignalR hub
+
+  security:
+    enabled: false #Enable if we end up adding in user authentication
+    token: "" #Placeholder for an access token if needed in the future
+
+  logging:
+    level:
+      root: INFO #Adjust logging level; DEBUG can be used for more detailed logs
+      org.springframework.web: INFO
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "*" #Expose all management endpoints
+
