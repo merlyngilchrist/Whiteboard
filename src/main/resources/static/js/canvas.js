@@ -1,5 +1,5 @@
 const canvas = document.getElementById("whiteboard");
-import * as signalR from "@microsoft/signalr";
+// import * as signalR from "@microsoft/signalr";
 
 
 let penSize = 5;
@@ -17,7 +17,7 @@ let buttons = [
 ];
 let undoStack = [];
 let redoStack = [];
-
+/*
 //SignalR connection
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
@@ -32,7 +32,7 @@ connection.on("ReceiveDrawing", (x, y, action) => {
 connection.start().then(() => {
     joinSession();
 }).catch(err => console.error(err));
-
+*/
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -59,20 +59,21 @@ if (canvas.getContext) {
     });
     changeSize(penSize);
     context.lineCap = "round";
+    context.getContextAttributes().willReadFrequently = true
 
     function startDrawing(event) {
         drawing = true;
         draw(event);
-        sendDrawing(event, "start");
+        saveCanvas();
+        // sendDrawing(event, "start");
     }
     function stopDrawing() {
         drawing = false;
         context.beginPath();
-        sendDrawing({clientX: 0, clientY: 0}, "end");
+        // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
     function draw(event) {
         if (!drawing) return;
-        saveCanvas();
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -82,16 +83,16 @@ if (canvas.getContext) {
         context.beginPath();
         context.moveTo(x,y);
 
-        sendDrawing(event, "draw");
+        // sendDrawing(event, "draw");
     }
-
+/*
    //Sends Drawing to Server
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
-
+*/
     // Change color based on parameter
     function changeColor(color) {
         penColor = color;
