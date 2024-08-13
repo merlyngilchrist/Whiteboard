@@ -133,11 +133,11 @@ function selectFillTool() {
 }
 
 function selectPenSizeUp() {
-
+    changeSize(++penSize);
 }
 
 function selectPenSizeDown() {
-
+    changeSize(--penSize);
 }
 
 function selectShapeTool(shape) {
