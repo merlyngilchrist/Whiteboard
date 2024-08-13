@@ -1,4 +1,6 @@
 const canvas = document.getElementById("whiteboard");
+import * as signalR from "@microsoft/signalr";
+
 
 let penSize = 5;
 let penColor;
@@ -14,14 +16,17 @@ let buttons = [
     "triangleButton"
 ];
 
+//SignalR connection
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
     .build();
 
+//Turn connection on
 connection.on("ReceiveDrawing", (x, y, action) => {
     drawFromServer(x, y, action);
 });
 
+//Starts connection
 connection.start().then(() => {
     joinSession();
 }).catch(err => console.error(err));
@@ -77,6 +82,7 @@ if (canvas.getContext) {
         sendDrawing(event, "draw");
     }
 
+   //Sends Drawing to Server
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;

@@ -49,6 +49,7 @@ function draw(x, y, action){
     drawFromServer(x, y, action);
 }
 
+//Allows to draw on the Server
 function drawFromServer(x, y, action){
     if (action === "start"){
         ctx.beginPath();
