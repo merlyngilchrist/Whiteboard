@@ -15,6 +15,8 @@ let buttons = [
     "squareButton",
     "triangleButton"
 ];
+let undoStack = [];
+let redoStack = [];
 
 //SignalR connection
 const connection = new signalR.HubConnectionBuilder()
@@ -70,6 +72,7 @@ if (canvas.getContext) {
     }
     function draw(event) {
         if (!drawing) return;
+        saveCanvas();
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -107,6 +110,27 @@ if (canvas.getContext) {
         penSize = size;
         context.lineWidth = size;
     }
+
+    function redo() {
+        if (redoStack.length > 0){
+            undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
+            let nextState = redoStack.pop();
+            context.putImageData(nextState,0,0);
+        }
+    }
+
+    function undo() {
+        if (undoStack.length > 0){
+            redoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
+            let previousState = undoStack.pop();
+            context.putImageData(previousState,0,0);
+        }
+    }
+
+    function saveCanvas() {
+        redoStack = [];
+        undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
+    }
 }
 
 function selectPenTool() {
@@ -120,14 +144,12 @@ function selectEraserTool() {
     changeColor("white");
 }
 
-function undo() {
-    showRedoButton(true);
-    showUndoButton(false);
+function undoButton() {
+    undo();
 }
 
-function redo() {
-    showRedoButton(false);
-    showUndoButton(true);
+function redoButton() {
+    redo();
 }
 
 function selectColorPicker() {
@@ -170,25 +192,5 @@ function selectButton(buttonID) {
             document.getElementById(button).classList.remove("selectedTool");
         }
     });
-}
-
-function showRedoButton(show) {
-    if (show) {
-        document.getElementById("redoButton").classList.remove("disabled");
-        document.getElementById("undoButton").style.borderTopRightRadius = '0%';
-    } else {
-        document.getElementById("redoButton").classList.add("disabled");
-        document.getElementById("undoButton").style.borderTopRightRadius = '30%';
-    }
-}
-
-function showUndoButton(show) {
-    if (show) {
-        document.getElementById("undoButton").classList.remove("disabled");
-        document.getElementById("redoButton").style.borderTopLeftRadius = '0%';
-    } else {
-        document.getElementById("undoButton").classList.add("disabled");
-        document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
-    }
 }
 

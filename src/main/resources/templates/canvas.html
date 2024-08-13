@@ -5,8 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pen Together</title>
         <link rel="stylesheet" href="/css/canvas.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js" defer></script>
         <script src="/js/canvas.js" defer></script>
+        <link rel="icon" href="/images/PenTogetherLogo.jpg" type="image/jpg">
     </head>
     <body>
         <canvas id="whiteboard" alt="Drawing canvas" class="fullscreen"></canvas>
@@ -35,11 +36,11 @@
             <img src="/images/paint-bucket.png" alt="Fill tool">
         </button>
         <!-- Undo button -->
-        <button type="button" onclick="undo()" class="unselectedTool" id="undoButton">
+        <button type="button" onclick="undoButton()" class="unselectedTool" id="undoButton">
             <img src="/images/undo.png" alt="Undo">
         </button>
         <!-- Redo button -->
-        <button type="button" onclick="redo()" class="unselectedTool" id="redoButton">
+        <button type="button" onclick="redoButton()" class="unselectedTool" id="redoButton">
             <img src="/images/redo.png" alt="Redo">
         </button>
     </body>
