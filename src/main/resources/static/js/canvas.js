@@ -1,5 +1,6 @@
 const canvas = document.getElementById("whiteboard");
 const eraserCircle = document.getElementById("eraserCircle");
+const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
 
@@ -127,6 +128,7 @@ if (canvas.getContext) {
         }
         penSize = size;
         context.lineWidth = size;
+        penSizeText.innerHTML = `${penSize}` + "px";
     }
 
     function redo() {
@@ -182,11 +184,11 @@ function selectFillTool() {
     currentTool = toolTypes.FILL;
 }
 
-function selectPenSizeUp() {
+function increasePenSizeButton() {
     changeSize(++penSize);
 }
 
-function selectPenSizeDown() {
+function decreasePenSizeButton() {
     changeSize(--penSize);
 }
 

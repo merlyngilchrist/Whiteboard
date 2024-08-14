@@ -29,12 +29,34 @@ body {
     overflow: auto;
 }
 
-button {
+button, .menuItem {
     border: 1px solid black;
     position: fixed;
     left: 0;
     width: 60px;
     height: 6%;
+}
+
+.menuItem {
+    left: auto;
+    right: 0px;
+    width: 59px;
+}
+
+.menuItem p {
+    display: block;
+    height: auto;
+    width: auto;
+    max-height: 40%;
+    font-size: medium;
+    pointer-events: none;
+    user-select: none;
+    text-align: center;
+    bottom: 10%;
+}
+
+#penSizeItem {
+    top: 49.9%;
 }
 
 button img {
@@ -98,6 +120,33 @@ button img {
     left: 60px;
     border-top-right-radius: 30%;
 }
+
+#increasePenSizeButton, #decreasePenSizeButton {
+    right: 0px;
+    left: auto;
+}
+
+#increasePenSizeButton {
+    top: 44%;
+    border-top-left-radius: 30%;
+}
+
+#decreasePenSizeButton {
+    border-bottom-left-radius: 30%;
+    top: 56%;
+}
+
+#increasePenSizeButton:active {
+    -webkit-filter:invert(100%);
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+}
+
+#decreasePenSizeButton:active {
+    -webkit-filter:invert(100%);
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+}
+
+
 
 
 .disabled {
