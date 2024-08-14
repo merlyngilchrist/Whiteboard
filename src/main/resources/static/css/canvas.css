@@ -105,12 +105,21 @@ button img {
     background-color: white;
 }
 
+#eraserCircle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border: 1px dashed grey;
+    border-radius: 50%;
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+}
 
 
 /* SLIDER STUFF */
 
 .sliderContainer {
-<<<<<<< Updated upstream
     background-color: deeppink;
 }
 

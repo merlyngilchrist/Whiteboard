@@ -1,4 +1,5 @@
 const canvas = document.getElementById("whiteboard");
+const eraserCircle = document.getElementById("eraserCircle");
 // import * as signalR from "@microsoft/signalr";
 
 
@@ -15,6 +16,15 @@ let buttons = [
     "squareButton",
     "triangleButton"
 ];
+const toolTypes = Object.freeze({
+    PEN: 0,
+    ERASER: 1,
+    FILL: 2,
+    CIRCLE: 3,
+    SQUARE: 4,
+    TRIANGLE: 5
+});
+let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
 /*
@@ -46,9 +56,9 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
-    canvas.addEventListener('mousedown',startDrawing);
-    canvas.addEventListener('mouseup',stopDrawing);
-    canvas.addEventListener('mousemove',draw);
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
@@ -70,6 +80,9 @@ if (canvas.getContext) {
     function stopDrawing() {
         drawing = false;
         context.beginPath();
+        if (currentTool === toolTypes.ERASER) {
+            disableEraserCursor();
+        }
         // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
     function draw(event) {
@@ -82,6 +95,9 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
+        if (currentTool === toolTypes.ERASER) {
+            enableEraserCursor(event);
+        }
 
         // sendDrawing(event, "draw");
     }
@@ -132,17 +148,20 @@ if (canvas.getContext) {
         redoStack = [];
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
     }
+
 }
 
 function selectPenTool() {
     selectButton("penButton");
     changeColor("black");
+    currentTool = toolTypes.PEN;
 }
 
 
 function selectEraserTool() {
     selectButton("eraserButton");
     changeColor("white");
+    currentTool = toolTypes.ERASER;
 }
 
 function undoButton() {
@@ -159,6 +178,7 @@ function selectColorPicker() {
 
 function selectFillTool() {
     selectButton("fillButton");
+    currentTool = toolTypes.FILL;
 }
 
 function selectPenSizeUp() {
@@ -173,12 +193,15 @@ function selectShapeTool(shape) {
     switch (shape) {
         case "circle":
             selectButton("circleButton");
+            currentTool = toolTypes.CIRCLE;
             break;
         case "square":
             selectButton("squareButton");
+            currentTool = toolTypes.SQUARE;
             break;
         case "triangle":
             selectButton("triangleButton");
+            currentTool = toolTypes.TRIANGLE;
             break;
     }
 }
@@ -195,3 +218,22 @@ function selectButton(buttonID) {
     });
 }
 
+function enableEraserCursor(event) {
+    eraserCircle.style.display = 'block';
+    moveEraserCircle(event);
+    canvas.addEventListener('mousemove', moveEraserCircle);
+}
+
+function disableEraserCursor() {
+    eraserCircle.style.display = 'none';
+    canvas.removeEventListener('mousemove', moveEraserCircle);
+}
+
+function moveEraserCircle(event) {
+    eraserCircle.style.width = `${penSize}px`;
+    eraserCircle.style.height = `${penSize}px`;
+    const x = event.clientX - eraserCircle.offsetWidth / 2;
+    const y = event.clientY - eraserCircle.offsetHeight / 2;
+    eraserCircle.style.left = `${x}px`;
+    eraserCircle.style.top = `${y}px`;
+}
