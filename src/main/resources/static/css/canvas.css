@@ -70,6 +70,10 @@ button img {
 
 #triangleButton {
     top: 55.9%;
+}
+
+#colorPickerButton {
+    top: 61.9%;
     border-bottom-right-radius: 30%;
 }
 
@@ -95,6 +99,7 @@ button img {
     border-top-right-radius: 30%;
 }
 
+
 .disabled {
     opacity: 0;
     pointer-events: none;
@@ -117,6 +122,8 @@ button img {
 }
 
 
+
+
 /* SLIDER STUFF */
 
 .sliderContainer {
@@ -133,7 +140,6 @@ button img {
     width: 40%;
     min-width: 120px;
     height: 40px;
-=======
     transform: rotate(270deg);
     background-color: deeppink;
     position: fixed;
@@ -141,6 +147,5 @@ button img {
     max-width: 25%;
     min-width: 90px;
     height: 20px;
->>>>>>> Stashed changes
     top: 50%;
 }

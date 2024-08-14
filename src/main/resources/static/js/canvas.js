@@ -14,7 +14,8 @@ let buttons = [
     "redoButton",
     "circleButton",
     "squareButton",
-    "triangleButton"
+    "triangleButton",
+    "colorPickerButton"
 ];
 const toolTypes = Object.freeze({
     PEN: 0,
@@ -173,7 +174,7 @@ function redoButton() {
 }
 
 function selectColorPicker() {
-
+    selectButton("colorPickerButton");
 }
 
 function selectFillTool() {
