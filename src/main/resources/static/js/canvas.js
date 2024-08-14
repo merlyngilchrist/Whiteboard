@@ -5,7 +5,6 @@ const penSizeText = document.getElementById("penSizeText");
 
 
 let penSize = 5;
-let penColor;
 let addedEraserSize = 5;
 let buttons = [
     "penButton",
@@ -26,6 +25,23 @@ const toolTypes = Object.freeze({
     SQUARE: 4,
     TRIANGLE: 5
 });
+const colors = Object.freeze({
+    BLACK: "black",
+    RED: "red",
+    GREEN: "lime",
+    BLUE: "blue",
+    YELLOW: "yellow",
+    PURPLE: "rebeccapurple",
+    WHITE: "white",
+    ORANGE: "orange",
+    PINK: "magenta",
+    JAXEN_ORANGE: '#F39C12',
+    MERLYN_RED: '#FF0101',
+    OWEN_PURPLE: '#642D96',
+    ZACH_LIME: '#01FF01'
+
+});
+let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
@@ -69,6 +85,7 @@ if (canvas.getContext) {
             changeSize(--penSize);
         }
     });
+
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true
@@ -113,9 +130,7 @@ if (canvas.getContext) {
 */
     // Change color based on parameter
     function changeColor(color) {
-        penColor = color;
         context.strokeStyle = color;
-
     }
 
     // Change size of pen based on parameter
@@ -127,7 +142,7 @@ if (canvas.getContext) {
             size = 20;
         }
         penSize = size;
-        context.lineWidth = size;
+        context.lineWidth = penSize;
         penSizeText.innerHTML = `${penSize}` + "px";
     }
 
@@ -156,14 +171,12 @@ if (canvas.getContext) {
 
 function selectPenTool() {
     selectButton("penButton");
-    changeColor("black");
     currentTool = toolTypes.PEN;
 }
 
-
 function selectEraserTool() {
     selectButton("eraserButton");
-    changeColor("white");
+    changeColor(colors.WHITE);
     currentTool = toolTypes.ERASER;
 }
 
@@ -219,6 +232,7 @@ function selectButton(buttonID) {
             document.getElementById(button).classList.remove("selectedTool");
         }
     });
+    changeColor(currentColor);
 }
 
 function enableEraserCursor(event) {
