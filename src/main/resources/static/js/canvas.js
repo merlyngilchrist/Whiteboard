@@ -1,11 +1,10 @@
 const canvas = document.getElementById("whiteboard");
-const eraserCircle = document.getElementById("eraserCircle");
+const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
-
 let penSize = 5;
-let addedEraserSize = 5;
+let addedEraserSize = 20;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -39,7 +38,6 @@ const colors = Object.freeze({
     MERLYN_RED: '#FF0505',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#41FF07'
-
 });
 let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
@@ -104,9 +102,6 @@ if (canvas.getContext) {
     function stopDrawing() {
         drawing = false;
         context.beginPath();
-        if (currentTool === toolTypes.ERASER) {
-            disableEraserCursor();
-        }
         // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
     function draw(event) {
@@ -119,9 +114,7 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
-        if (currentTool === toolTypes.ERASER) {
-            enableEraserCursor(event);
-        }
+        enableCursorCircle(event);
 
         // sendDrawing(event, "draw");
     }
@@ -135,6 +128,9 @@ if (canvas.getContext) {
 */
     // Change color based on parameter
     function changeColor(color) {
+        if (currentTool !== toolTypes.ERASER) {
+            currentColor = color;
+        }
         context.strokeStyle = color;
         selectColorOption(color);
     }
@@ -180,15 +176,14 @@ if (canvas.getContext) {
 }
 
 function selectPenTool() {
-    selectButton("penButton");
     currentTool = toolTypes.PEN;
+    selectButton("penButton");
 }
 
 function selectEraserTool() {
+    currentTool = toolTypes.ERASER;
     selectButton("eraserButton");
     changeColor(colors.WHITE);
-    currentTool = toolTypes.ERASER;
-
 }
 
 function undoButton() {
@@ -204,8 +199,8 @@ function selectColorPicker() {
 }
 
 function selectFillTool() {
-    selectButton("fillButton");
     currentTool = toolTypes.FILL;
+    selectButton("fillButton");
 }
 
 function increasePenSizeButton() {
@@ -219,16 +214,16 @@ function decreasePenSizeButton() {
 function selectShapeTool(shape) {
     switch (shape) {
         case "circle":
-            selectButton("circleButton");
             currentTool = toolTypes.CIRCLE;
+            selectButton("circleButton");
             break;
         case "square":
-            selectButton("squareButton");
             currentTool = toolTypes.SQUARE;
+            selectButton("squareButton");
             break;
         case "triangle":
-            selectButton("triangleButton");
             currentTool = toolTypes.TRIANGLE;
+            selectButton("triangleButton");
             break;
     }
 }
@@ -259,30 +254,24 @@ function selectColorOption(color) {
     });
 }
 
-function enableEraserCursor(event) {
-    eraserCircle.style.display = 'block';
-    moveEraserCircle(event);
-    canvas.addEventListener('mousemove', moveEraserCircle);
+function enableCursorCircle(event) {
+    cursorCircle.style.display = 'block';
+    moveCursorCircle(event);
+    canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
-function disableEraserCursor() {
-    eraserCircle.style.display = 'none';
-    canvas.removeEventListener('mousemove', moveEraserCircle);
-}
-
-function moveEraserCircle(event) {
-    eraserCircle.style.width = `${penSize}px`;
-    eraserCircle.style.height = `${penSize}px`;
-    const x = event.clientX - eraserCircle.offsetWidth / 2;
-    const y = event.clientY - eraserCircle.offsetHeight / 2;
-    eraserCircle.style.left = `${x}px`;
-    eraserCircle.style.top = `${y}px`;
+function moveCursorCircle(event) {
+    cursorCircle.style.width = `${penSize}px`;
+    cursorCircle.style.height = `${penSize}px`;
+    const x = event.clientX - cursorCircle.offsetWidth / 2;
+    const y = event.clientY - cursorCircle.offsetHeight / 2;
+    cursorCircle.style.left = `${x}px`;
+    cursorCircle.style.top = `${y}px`;
 }
 
 function createColorDisplaysInColorCircles() {
     document.querySelectorAll('.colorCircle').forEach(circle => {
-        const color = circle.getAttribute('data-color');
-        circle.style.backgroundColor = color;
+        circle.style.backgroundColor = circle.getAttribute('data-color');
     });
 }
 

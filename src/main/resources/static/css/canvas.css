@@ -11,7 +11,7 @@
 }
 
 body {
-    background-color: rgb(235, 237, 202);
+    background-color: rgb(222, 202, 255);
 }
 
 #whiteboard{
@@ -200,7 +200,7 @@ button img {
     background-color: white;
 }
 
-#eraserCircle {
+#cursorCircle {
     position: absolute;
     width: 5px;
     height: 5px;
