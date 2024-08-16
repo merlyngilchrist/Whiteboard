@@ -1,3 +1,70 @@
 body {
-    background-color: azure;
+    /*background-image: url('/static/images/backgroundImage.png');*/
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    color: #fff;
+    width: 100%;
+}
+
+.logo {
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+.header-title {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 100px);
+    gap: 20px;
+}
+
+.option {
+    text-align: center;
+}
+
+.btn {
+    padding: 35px 50px;
+    font-size: 28px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 300px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
