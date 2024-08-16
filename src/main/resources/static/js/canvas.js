@@ -3,6 +3,7 @@ const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
+
 let penSize = 5;
 let addedEraserSize = 20;
 let buttons = [
@@ -46,6 +47,7 @@ let redoStack = [];
 
 window.onload = function() {
     createColorDisplaysInColorCircles();
+    changeColor(currentColor);
 };
 
 /*
@@ -133,6 +135,10 @@ if (canvas.getContext) {
         }
         context.strokeStyle = color;
         selectColorOption(color);
+
+        //Change menu button to have current color
+        const currentColorCircle = document.getElementById("currentColorCircle")
+        currentColorCircle.style.backgroundColor = currentColor;
     }
 
     // Change size of pen based on parameter
@@ -261,8 +267,13 @@ function enableCursorCircle(event) {
 }
 
 function moveCursorCircle(event) {
-    cursorCircle.style.width = `${penSize}px`;
-    cursorCircle.style.height = `${penSize}px`;
+    if (currentTool === toolTypes.ERASER) {
+        cursorCircle.style.width = `${penSize + addedEraserSize}px`;
+        cursorCircle.style.height = `${penSize + addedEraserSize}px`;
+    } else {
+        cursorCircle.style.width = `${penSize}px`;
+        cursorCircle.style.height = `${penSize}px`;
+    }
     const x = event.clientX - cursorCircle.offsetWidth / 2;
     const y = event.clientY - cursorCircle.offsetHeight / 2;
     cursorCircle.style.left = `${x}px`;
@@ -271,7 +282,11 @@ function moveCursorCircle(event) {
 
 function createColorDisplaysInColorCircles() {
     document.querySelectorAll('.colorCircle').forEach(circle => {
-        circle.style.backgroundColor = circle.getAttribute('data-color');
+        if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
+            circle.style.backgroundColor = currentColor;
+        } else {
+            circle.style.backgroundColor = circle.getAttribute('data-color');
+        }
     });
 }
 
@@ -282,5 +297,4 @@ function displayColorOptions(display) {
     } else {
         colorContainer.style.display = "none";
     }
-
 }
