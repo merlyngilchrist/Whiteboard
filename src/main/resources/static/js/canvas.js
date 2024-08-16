@@ -45,6 +45,11 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
+
+window.onload = function() {
+    createColorDisplaysInColorCircles();
+};
+
 /*
 //SignalR connection
 const connection = new signalR.HubConnectionBuilder()
@@ -131,6 +136,8 @@ if (canvas.getContext) {
     // Change color based on parameter
     function changeColor(color) {
         context.strokeStyle = color;
+
+        selectColorOption(color);
     }
 
     // Change size of pen based on parameter
@@ -240,6 +247,17 @@ function selectButton(buttonID) {
     changeSize(penSize);
 }
 
+function selectColorOption(color) {
+    document.querySelectorAll('.colorCircle').forEach(circle => {
+        const colorOnCircle = circle.getAttribute('data-color');
+        if (colorOnCircle.localeCompare(color) === 0) {
+            circle.parentElement.classList.add("selectedColor");
+        } else {
+            circle.parentElement.classList.remove("selectedColor");
+        }
+    });
+}
+
 function enableEraserCursor(event) {
     eraserCircle.style.display = 'block';
     moveEraserCircle(event);
@@ -258,4 +276,11 @@ function moveEraserCircle(event) {
     const y = event.clientY - eraserCircle.offsetHeight / 2;
     eraserCircle.style.left = `${x}px`;
     eraserCircle.style.top = `${y}px`;
+}
+
+function createColorDisplaysInColorCircles() {
+    document.querySelectorAll('.colorCircle').forEach(circle => {
+        const color = circle.getAttribute('data-color');
+        circle.style.backgroundColor = color;
+    });
 }

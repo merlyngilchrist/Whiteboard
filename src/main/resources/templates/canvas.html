@@ -57,10 +57,27 @@
         <button type="button" onclick="decreasePenSizeButton()" class="unselectedTool" id="decreasePenSizeButton">
             <img src="/images/minus.png" alt="Decrease pen size">
         </button>
-
+        <!-- Pen size text -->
         <div class="menuItem" id="penSizeItem">
             <p id="penSizeText">5px</p>
         </div>
+
+        <!-- Color buttons -->
+        <div id="colorButtonsContainer">
+            <div class="menuItem" onclick="changeColor('black')" id="colorBlackButton">
+                <div class="colorCircle" data-color="black"></div>
+            </div>
+            <div class="menuItem" onclick="changeColor('yellow')" id="colorYellowButton">
+                <div class="colorCircle" data-color="yellow"></div>
+            </div>
+            <div class="menuItem" onclick="changeColor('blue')" id="colorBlueButton">
+                <div class="colorCircle" data-color="blue"></div>
+            </div>
+            <div class="menuItem" onclick="changeColor('red')" id="colorRedButton">
+                <div class="colorCircle" data-color="red"></div>
+            </div>
+        </div>
+
 
         <!-- Eraser feedback -->
         <div id="eraserCircle"></div>
