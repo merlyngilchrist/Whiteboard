@@ -11,7 +11,7 @@
 }
 
 body {
-    background-color: rgb(235, 237, 202);
+    background-color: rgb(222, 202, 255);
 }
 
 #whiteboard{
@@ -38,6 +38,7 @@ button, .menuItem {
 }
 
 .menuItem {
+    background-color: white;
     left: auto;
     right: 0px;
     width: 59px;
@@ -147,6 +148,46 @@ button img {
 }
 
 
+/* Color selection */
+.menuItem .colorCircle {
+    border: 1px solid black;
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.menuItem:has(.colorCircle) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4%;
+    height: 60px;
+    bottom: 0;
+}
+
+#colorBlackButton {
+    border-top-left-radius: 30%;
+    left: 42%;
+}
+#colorYellowButton {
+    left: 46%;
+}
+#colorRedButton {
+    left: 50%;
+}
+#colorBlueButton {
+    border-top-right-radius: 30%;
+    left: 54%;
+}
+
+.selectedColor {
+    background-color: #333333;
+}
+.selectedColor .colorCircle {
+    border: 3px solid white;
+}
+
 
 
 .disabled {
@@ -159,7 +200,7 @@ button img {
     background-color: white;
 }
 
-#eraserCircle {
+#cursorCircle {
     position: absolute;
     width: 5px;
     height: 5px;
