@@ -36,9 +36,9 @@ const colors = Object.freeze({
     ORANGE: "orange",
     PINK: "magenta",
     JAXEN_ORANGE: '#F39C12',
-    MERLYN_RED: '#FF0101',
+    MERLYN_RED: '#FF0505',
     OWEN_PURPLE: '#642D96',
-    ZACH_LIME: '#01FF01'
+    ZACH_LIME: '#41FF07'
 
 });
 let currentColor = colors.BLACK;
@@ -141,9 +141,13 @@ if (canvas.getContext) {
         if (size > 20) {
             size = 20;
         }
-        penSize = size;
-        context.lineWidth = penSize;
-        penSizeText.innerHTML = `${penSize}` + "px";
+        if (currentTool !== toolTypes.ERASER) {
+            penSize = size;
+            context.lineWidth = penSize;
+            penSizeText.innerHTML = `${penSize}` + "px";
+        } else {
+            context.lineWidth = penSize + addedEraserSize;
+        }
     }
 
     function redo() {
@@ -233,6 +237,7 @@ function selectButton(buttonID) {
         }
     });
     changeColor(currentColor);
+    changeSize(penSize);
 }
 
 function enableEraserCursor(event) {
