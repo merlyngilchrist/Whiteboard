@@ -1,39 +1,59 @@
-azure:
-  signalr:
-    url: wss://whiteboard.service.signalr.net
-    access-key: Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=
-    hub-name: whiteboard
 
 server:
-  port: 8080 #Port the application runs on
+  port: 8080 # Default port, you can change this if needed
+  servlet:
+    context-path: / # Context path, set to root
 
 spring:
-  application:
-    name: whiteboard-app #Application name
+  profiles:
+    active: prod # Activates the production profile
 
-  mvc:
-    async:
-      request-timeout: 30000 #Increase timeout for longer running requests if neccessary
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically updates the database schema
+    show-sql: true # Show SQL queries in the log
+    properties:
+      hibernate:
+        format_sql: true
 
   websocket:
     message-broker:
-      enabled: false #Disabled Spring's built-in message broker since we're using SignalR directly
+      enabled: true
+    broker:
+      simple:
+        enabled: true # Enable simple broker
+    application-destination-prefixes: /app # Prefix for application destinations
 
-signalr:
-  url: "https://whiteboard.service.signalr.net" #URL for SignalR hub
+logging:
+  level:
+    root: INFO # Default logging level
+    org.springframework.web: DEBUG # Debug level for Spring Web
 
-  security:
-    enabled: false #Enable if we end up adding in user authentication
-    token: "" #Placeholder for an access token if needed in the future
+# Azure-specific configurations (if deploying to Azure)
+azure:
+  signalr:
+    connection-string: ${Endpoint=https://whiteboard.service.signalr.net;AccessKey=Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=;Version=1.0;} # SignalR connection string (store in environment variables)
 
-  logging:
-    level:
-      root: INFO #Adjust logging level; DEBUG can be used for more detailed logs
-      org.springframework.web: INFO
+    url: "wss://whiteboard.service.signalr.net"
+    access-key: "Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U="
+    hub-name: "whiteboard"
+  app:
+    service:
+      name: ${PenTogether} # App service name (store in environment variables)
+  monitor:
+    diagnostics:
+      enabled: true
+      blob:
+        enabled: true
+        container-name: container-name
+        sas-token: sas-token
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: "*" #Expose all management endpoints
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Expose all management endpoints
+
+
 

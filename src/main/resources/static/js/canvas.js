@@ -48,7 +48,22 @@ let redoStack = [];
 
 window.onload = function() {
     createColorDisplaysInColorCircles();
+    testConnection()
 };
+
+// JavaScript test connection with Java
+function testConnection(){
+    fetch("/test-connection")
+        .then(response => response.text())
+        .then(data => {
+            console.log("Response from Java: " + data);
+        })
+        .catch(error => {
+            console.error("Error connecting to Java: " + error);
+        })
+}
+
+
 
 /*
 //SignalR connection
