@@ -5,7 +5,6 @@ const penSizeText = document.getElementById("penSizeText");
 
 
 let penSize = 5;
-let addedEraserSize = 20;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -94,6 +93,8 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true
+    enableCursorCircle();
+    selectCursor("penButton")
 
     function startDrawing(event) {
         drawing = true;
@@ -116,7 +117,6 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
-        enableCursorCircle(event);
 
         // sendDrawing(event, "draw");
     }
@@ -143,19 +143,15 @@ if (canvas.getContext) {
 
     // Change size of pen based on parameter
     function changeSize(size) {
-        if (size < 3){
-            size = 3;
+        if (size < 1){
+            size = 1;
         }
-        if (size > 20) {
-            size = 20;
+        if (size > 50) {
+            size = 50;
         }
-        if (currentTool !== toolTypes.ERASER) {
-            penSize = size;
-            context.lineWidth = penSize;
-            penSizeText.innerHTML = `${penSize}` + "px";
-        } else {
-            context.lineWidth = penSize + addedEraserSize;
-        }
+        penSize = size;
+        context.lineWidth = penSize;
+        penSizeText.innerHTML = `${penSize}` + "px";
     }
 
     function redo() {
@@ -179,6 +175,33 @@ if (canvas.getContext) {
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
     }
 
+}
+
+function removeCursors() {
+    return "'pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor'";
+}
+
+function selectCursor(button) {
+    if (button === "penButton") {
+        document.body.classList.remove(removeCursors());
+        document.body.classList.add('pen-cursor');
+    }
+    if (button === "eraserButton") {
+        document.body.classList.remove(removeCursors());
+        document.body.classList.add('eraser-cursor');
+    }
+    if (button === "fillButton") {
+        document.body.classList.remove(removeCursors());
+        document.body.classList.add('fill-cursor');
+    }
+    if (button === "colorPickerButton") {
+        document.body.classList.remove(removeCursors());
+        document.body.classList.add('dropper-cursor');
+    }
+    if (button === "circleButton" || button === "squareButton" || button === "triangleButton") {
+        document.body.classList.remove(removeCursors());
+        document.body.classList.add('shape-cursor');
+    }
 }
 
 function selectPenTool() {
@@ -244,6 +267,7 @@ function selectButton(buttonID) {
             document.getElementById(button).classList.remove("selectedTool");
         }
     });
+    selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
     displayColorOptions((buttonID !== "eraserButton"))
@@ -260,9 +284,8 @@ function selectColorOption(color) {
     });
 }
 
-function enableCursorCircle(event) {
+function enableCursorCircle() {
     cursorCircle.style.display = 'block';
-    moveCursorCircle(event);
     canvas.addEventListener('mousemove', moveCursorCircle);
 }
 

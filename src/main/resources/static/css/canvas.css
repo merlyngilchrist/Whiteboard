@@ -40,7 +40,7 @@ button, .menuItem {
 .menuItem {
     background-color: white;
     left: auto;
-    right: 0px;
+    right: 0;
     width: 59px;
 }
 
@@ -110,7 +110,7 @@ button img {
 }
 
 #undoButton, #redoButton {
-    bottom: 0px;
+    bottom: 0;
 }
 
 #undoButton {
@@ -123,7 +123,7 @@ button img {
 }
 
 #increasePenSizeButton, #decreasePenSizeButton {
-    right: 0px;
+    right: 0;
     left: auto;
 }
 
@@ -213,4 +213,25 @@ button img {
     pointer-events: none;
     display: none;
     z-index: 10;
+}
+
+/* Cursor Updating */
+.pen-cursor {
+    cursor: url("../images/pen.png"), default;
+}
+
+.eraser-cursor {
+    cursor: url("../images/eraser.png"), default;
+}
+
+.fill-cursor {
+    cursor: url("../images/paint-bucket.png"), default;
+}
+
+.dropper-cursor {
+    cursor: url("../images/dropper.png"), default;
+}
+
+.shape-cursor {
+    cursor: url("../images/plus.png"), crosshair;
 }
