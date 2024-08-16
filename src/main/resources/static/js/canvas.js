@@ -136,7 +136,6 @@ if (canvas.getContext) {
     // Change color based on parameter
     function changeColor(color) {
         context.strokeStyle = color;
-
         selectColorOption(color);
     }
 
@@ -189,6 +188,7 @@ function selectEraserTool() {
     selectButton("eraserButton");
     changeColor(colors.WHITE);
     currentTool = toolTypes.ERASER;
+
 }
 
 function undoButton() {
@@ -245,6 +245,7 @@ function selectButton(buttonID) {
     });
     changeColor(currentColor);
     changeSize(penSize);
+    displayColorOptions((buttonID !== "eraserButton"))
 }
 
 function selectColorOption(color) {
@@ -283,4 +284,14 @@ function createColorDisplaysInColorCircles() {
         const color = circle.getAttribute('data-color');
         circle.style.backgroundColor = color;
     });
+}
+
+function displayColorOptions(display) {
+    const colorContainer = document.getElementById("colorButtonsContainer");
+    if (display) {
+        colorContainer.style.display = "";
+    } else {
+        colorContainer.style.display = "none";
+    }
+
 }
