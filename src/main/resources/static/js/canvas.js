@@ -30,10 +30,9 @@ const colors = Object.freeze({
     YELLOW: "yellow",
     PURPLE: "rebeccapurple",
     WHITE: "white",
-    ORANGE: "orange",
     PINK: "magenta",
     JAXEN_ORANGE: '#F39C12',
-    MERLYN_RED: '#FF1010',
+    MERLYN_RED: '#FF0000',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#41FF07'
 });
@@ -45,7 +44,7 @@ let redoStack = [];
 window.onload = function() {
     createColorDisplaysInColorCircles();
     changeColor(currentColor);
-    testConnection()
+    testConnection();
 };
 
 // JavaScript test connection with Java
@@ -57,7 +56,7 @@ function testConnection(){
         })
         .catch(error => {
             console.error("Error connecting to Java: " + error);
-        })
+        });
 }
 
 
@@ -105,21 +104,31 @@ if (canvas.getContext) {
 
     changeSize(penSize);
     context.lineCap = "round";
-    context.getContextAttributes().willReadFrequently = true
+    context.getContextAttributes().willReadFrequently = true;
     enableCursorCircle();
-    selectCursor("penButton")
+    selectCursor("penButton");
 
+    /**
+     *
+     * @param event
+     */
     function startDrawing(event) {
         drawing = true;
         draw(event);
         saveCanvas();
         // sendDrawing(event, "start");
     }
+
     function stopDrawing() {
         drawing = false;
         context.beginPath();
         // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
+
+    /**
+     *
+     * @param event
+     */
     function draw(event) {
         if (!drawing) return;
 
@@ -136,6 +145,11 @@ if (canvas.getContext) {
     }
 
    //Sends Drawing to Server
+    /**
+     *
+     * @param event
+     * @param action
+     */
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -143,6 +157,10 @@ if (canvas.getContext) {
     }
 
     // Change color based on parameter
+    /**
+     *
+     * @param color
+     */
     function changeColor(color) {
         if (currentTool !== toolTypes.ERASER) {
             currentColor = color;
@@ -152,6 +170,10 @@ if (canvas.getContext) {
     }
 
     // Change size of pen based on parameter
+    /**
+     *
+     * @param size
+     */
     function changeSize(size) {
         if (size < 1){
             size = 1;
@@ -191,6 +213,10 @@ function removeCursors() {
     document.body.classList.remove('pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor');
 }
 
+/**
+ *
+ * @param button
+ */
 function selectCursor(button) {
     removeCursors()
     if (button.localeCompare("penButton") === 0) {
@@ -213,7 +239,7 @@ function selectCursor(button) {
 function selectPenTool() {
     currentTool = toolTypes.PEN;
     selectButton("penButton");
-    selectCursor("penButton")
+    selectCursor("penButton");
 }
 
 function selectEraserTool() {
@@ -233,13 +259,13 @@ function redoButton() {
 
 function selectColorPicker() {
     selectButton("colorPickerButton");
-    selectCursor("colorPickerButton")
+    selectCursor("colorPickerButton");
 }
 
 function selectFillTool() {
     currentTool = toolTypes.FILL;
     selectButton("fillButton");
-    selectCursor("fillButton")
+    selectCursor("fillButton");
 }
 
 function increasePenSizeButton() {
@@ -250,6 +276,10 @@ function decreasePenSizeButton() {
     changeSize(--penSize);
 }
 
+/**
+ *
+ * @param shape
+ */
 function selectShapeTool(shape) {
     switch (shape) {
         case "circle":
@@ -260,16 +290,20 @@ function selectShapeTool(shape) {
         case "square":
             currentTool = toolTypes.SQUARE;
             selectButton("squareButton");
-            selectCursor("squareButton")
+            selectCursor("squareButton");
             break;
         case "triangle":
             currentTool = toolTypes.TRIANGLE;
             selectButton("triangleButton");
-            selectCursor("triangleButton")
+            selectCursor("triangleButton");
             break;
     }
 }
 
+/**
+ *
+ * @param buttonID
+ */
 function selectButton(buttonID) {
     buttons.forEach(button => {
         if (buttonID === button) {
@@ -283,9 +317,13 @@ function selectButton(buttonID) {
     selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
-    displayColorOptions((buttonID !== "eraserButton"))
+    displayColorOptions((buttonID !== "eraserButton"));
 }
 
+/**
+ *
+ * @param color
+ */
 function selectColorOption(color) {
     document.querySelectorAll('.colorCircle').forEach(circle => {
         const colorOnCircle = circle.getAttribute('data-color');
@@ -302,6 +340,10 @@ function enableCursorCircle() {
     canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
+/**
+ *
+ * @param event
+ */
 function moveCursorCircle(event) {
     cursorCircle.style.width = `${penSize}px`;
     cursorCircle.style.height = `${penSize}px`;
@@ -321,6 +363,10 @@ function createColorDisplaysInColorCircles() {
     });
 }
 
+/**
+ *
+ * @param display
+ */
 function displayColorOptions(display) {
     const colorContainer = document.getElementById("colorButtonsContainer");
     if (display) {
