@@ -63,22 +63,22 @@ function testConnection(){
 
 
 
-/*
+
 //SignalR connection
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
-    .build();
+// const connection = new signalR.HubConnectionBuilder()
+//     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
+//     .build();
 
 //Turn connection on
-connection.on("ReceiveDrawing", (x, y, action) => {
-    drawFromServer(x, y, action);
-});
+// connection.on("ReceiveDrawing", (x, y, action) => {
+//     drawFromServer(x, y, action);
+// });
 
 //Starts connection
-connection.start().then(() => {
-    joinSession();
-}).catch(err => console.error(err));
-*/
+// connection.start().then(() => {
+//     joinSession();
+// }).catch(err => console.error(err));
+
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -133,14 +133,14 @@ if (canvas.getContext) {
 
         // sendDrawing(event, "draw");
     }
-/*
+
    //Sends Drawing to Server
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
-*/
+
     // Change color based on parameter
     function changeColor(color) {
         if (currentTool !== toolTypes.ERASER) {
