@@ -3,8 +3,8 @@ const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
-
 let penSize = 5;
+let addedEraserSize = 20;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -46,25 +46,39 @@ let redoStack = [];
 
 window.onload = function() {
     createColorDisplaysInColorCircles();
-    changeColor(currentColor);
+    testConnection()
 };
 
-/*
+// JavaScript test connection with Java
+function testConnection(){
+    fetch("/test-connection")
+        .then(response => response.text())
+        .then(data => {
+            console.log("Response from Java: " + data);
+        })
+        .catch(error => {
+            console.error("Error connecting to Java: " + error);
+        })
+}
+
+
+
+
 //SignalR connection
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
-    .build();
+// const connection = new signalR.HubConnectionBuilder()
+//     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
+//     .build();
 
 //Turn connection on
-connection.on("ReceiveDrawing", (x, y, action) => {
-    drawFromServer(x, y, action);
-});
+// connection.on("ReceiveDrawing", (x, y, action) => {
+//     drawFromServer(x, y, action);
+// });
 
 //Starts connection
-connection.start().then(() => {
-    joinSession();
-}).catch(err => console.error(err));
-*/
+// connection.start().then(() => {
+//     joinSession();
+// }).catch(err => console.error(err));
+
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -93,8 +107,6 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true
-    enableCursorCircle();
-    selectCursor("penButton")
 
     function startDrawing(event) {
         drawing = true;
@@ -117,17 +129,18 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
+        enableCursorCircle(event);
 
         // sendDrawing(event, "draw");
     }
-/*
+
    //Sends Drawing to Server
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
-*/
+
     // Change color based on parameter
     function changeColor(color) {
         if (currentTool !== toolTypes.ERASER) {
@@ -135,23 +148,23 @@ if (canvas.getContext) {
         }
         context.strokeStyle = color;
         selectColorOption(color);
-
-        //Change menu button to have current color
-        const currentColorCircle = document.getElementById("currentColorCircle")
-        currentColorCircle.style.backgroundColor = currentColor;
     }
 
     // Change size of pen based on parameter
     function changeSize(size) {
-        if (size < 1){
-            size = 1;
+        if (size < 3){
+            size = 3;
         }
-        if (size > 50) {
-            size = 50;
+        if (size > 20) {
+            size = 20;
         }
-        penSize = size;
-        context.lineWidth = penSize;
-        penSizeText.innerHTML = `${penSize}` + "px";
+        if (currentTool !== toolTypes.ERASER) {
+            penSize = size;
+            context.lineWidth = penSize;
+            penSizeText.innerHTML = `${penSize}` + "px";
+        } else {
+            context.lineWidth = penSize + addedEraserSize;
+        }
     }
 
     function redo() {
@@ -175,33 +188,6 @@ if (canvas.getContext) {
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
     }
 
-}
-
-function removeCursors() {
-    return "'pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor'";
-}
-
-function selectCursor(button) {
-    if (button === "penButton") {
-        document.body.classList.remove(removeCursors());
-        document.body.classList.add('pen-cursor');
-    }
-    if (button === "eraserButton") {
-        document.body.classList.remove(removeCursors());
-        document.body.classList.add('eraser-cursor');
-    }
-    if (button === "fillButton") {
-        document.body.classList.remove(removeCursors());
-        document.body.classList.add('fill-cursor');
-    }
-    if (button === "colorPickerButton") {
-        document.body.classList.remove(removeCursors());
-        document.body.classList.add('dropper-cursor');
-    }
-    if (button === "circleButton" || button === "squareButton" || button === "triangleButton") {
-        document.body.classList.remove(removeCursors());
-        document.body.classList.add('shape-cursor');
-    }
 }
 
 function selectPenTool() {
@@ -267,7 +253,6 @@ function selectButton(buttonID) {
             document.getElementById(button).classList.remove("selectedTool");
         }
     });
-    selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
     displayColorOptions((buttonID !== "eraserButton"))
@@ -284,8 +269,9 @@ function selectColorOption(color) {
     });
 }
 
-function enableCursorCircle() {
+function enableCursorCircle(event) {
     cursorCircle.style.display = 'block';
+    moveCursorCircle(event);
     canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
@@ -300,11 +286,7 @@ function moveCursorCircle(event) {
 
 function createColorDisplaysInColorCircles() {
     document.querySelectorAll('.colorCircle').forEach(circle => {
-        if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
-            circle.style.backgroundColor = currentColor;
-        } else {
-            circle.style.backgroundColor = circle.getAttribute('data-color');
-        }
+        circle.style.backgroundColor = circle.getAttribute('data-color');
     });
 }
 
@@ -315,4 +297,5 @@ function displayColorOptions(display) {
     } else {
         colorContainer.style.display = "none";
     }
+
 }

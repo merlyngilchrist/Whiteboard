@@ -12,6 +12,14 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class WhiteboardController {
 
+    //Test Connection between the Java files and JavaScript files
+    @GetMapping("/test-connection")
+    @ResponseBody
+    public String testConnection(){
+        System.out.println("Java files have received the request for JavaScript");
+        return "Connection Successful!";
+    }
+
     /**
      * Automatically gets called by Springboot to use index.html as the displayed html file
      * @return The name of .html file that should open

@@ -61,3 +61,5 @@ function drawFromServer(x, y, action){
         ctx.closePath();
     }
 }
+
+
