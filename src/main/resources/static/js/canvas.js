@@ -290,13 +290,8 @@ function enableCursorCircle() {
 }
 
 function moveCursorCircle(event) {
-    if (currentTool === toolTypes.ERASER) {
-        cursorCircle.style.width = `${penSize + addedEraserSize}px`;
-        cursorCircle.style.height = `${penSize + addedEraserSize}px`;
-    } else {
-        cursorCircle.style.width = `${penSize}px`;
-        cursorCircle.style.height = `${penSize}px`;
-    }
+    cursorCircle.style.width = `${penSize}px`;
+    cursorCircle.style.height = `${penSize}px`;
     const x = event.clientX - cursorCircle.offsetWidth / 2;
     const y = event.clientY - cursorCircle.offsetHeight / 2;
     cursorCircle.style.left = `${x}px`;
