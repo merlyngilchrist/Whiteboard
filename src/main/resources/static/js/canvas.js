@@ -4,7 +4,6 @@ const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
 let penSize = 5;
-let addedEraserSize = 20;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -26,8 +25,7 @@ const toolTypes = Object.freeze({
 });
 const colors = Object.freeze({
     BLACK: "black",
-    RED: "red",
-    GREEN: "lime",
+    GREEN: "green",
     BLUE: "blue",
     YELLOW: "yellow",
     PURPLE: "rebeccapurple",
@@ -35,7 +33,7 @@ const colors = Object.freeze({
     ORANGE: "orange",
     PINK: "magenta",
     JAXEN_ORANGE: '#F39C12',
-    MERLYN_RED: '#FF0505',
+    MERLYN_RED: '#FF1010',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#41FF07'
 });
@@ -46,6 +44,7 @@ let redoStack = [];
 
 window.onload = function() {
     createColorDisplaysInColorCircles();
+    changeColor(currentColor);
     testConnection()
 };
 
@@ -107,6 +106,8 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true
+    enableCursorCircle();
+    selectCursor("penButton")
 
     function startDrawing(event) {
         drawing = true;
@@ -129,7 +130,7 @@ if (canvas.getContext) {
         context.stroke();
         context.beginPath();
         context.moveTo(x,y);
-        enableCursorCircle(event);
+        enableCursorCircle();
 
         // sendDrawing(event, "draw");
     }
@@ -158,13 +159,9 @@ if (canvas.getContext) {
         if (size > 50) {
             size = 50;
         }
-        if (currentTool !== toolTypes.ERASER) {
-            penSize = size;
-            context.lineWidth = penSize;
-            penSizeText.innerHTML = `${penSize}` + "px";
-        } else {
-            context.lineWidth = penSize + addedEraserSize;
-        }
+        penSize = size;
+        context.lineWidth = penSize;
+        penSizeText.innerHTML = `${penSize}` + "px";
     }
 
     function redo() {
@@ -190,15 +187,40 @@ if (canvas.getContext) {
 
 }
 
+function removeCursors() {
+    document.body.classList.remove('pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor');
+}
+
+function selectCursor(button) {
+    removeCursors()
+    if (button.localeCompare("penButton") === 0) {
+        document.body.classList.add('pen-cursor');
+    }
+    if (button.localeCompare("eraserButton") === 0) {
+        document.body.classList.add('eraser-cursor');
+    }
+    if (button.localeCompare("fillButton")===0) {
+        document.body.classList.add('fill-cursor');
+    }
+    if (button.localeCompare("colorPickerButton") === 0) {
+        document.body.classList.add('dropper-cursor');
+    }
+    if (button.localeCompare("circleButton") === 0 || button.localeCompare("squareButton") === 0 || button.localeCompare("triangleButton") === 0) {
+        document.body.classList.add('shape-cursor');
+    }
+}
+
 function selectPenTool() {
     currentTool = toolTypes.PEN;
     selectButton("penButton");
+    selectCursor("penButton")
 }
 
 function selectEraserTool() {
     currentTool = toolTypes.ERASER;
     selectButton("eraserButton");
     changeColor(colors.WHITE);
+    selectCursor("eraserButton");
 }
 
 function undoButton() {
@@ -211,11 +233,13 @@ function redoButton() {
 
 function selectColorPicker() {
     selectButton("colorPickerButton");
+    selectCursor("colorPickerButton")
 }
 
 function selectFillTool() {
     currentTool = toolTypes.FILL;
     selectButton("fillButton");
+    selectCursor("fillButton")
 }
 
 function increasePenSizeButton() {
@@ -253,6 +277,7 @@ function selectButton(buttonID) {
             document.getElementById(button).classList.remove("selectedTool");
         }
     });
+    selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
     displayColorOptions((buttonID !== "eraserButton"))
@@ -269,9 +294,8 @@ function selectColorOption(color) {
     });
 }
 
-function enableCursorCircle(event) {
+function enableCursorCircle() {
     cursorCircle.style.display = 'block';
-    moveCursorCircle(event);
     canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
@@ -286,7 +310,11 @@ function moveCursorCircle(event) {
 
 function createColorDisplaysInColorCircles() {
     document.querySelectorAll('.colorCircle').forEach(circle => {
-        circle.style.backgroundColor = circle.getAttribute('data-color');
+        if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
+            circle.style.backgroundColor = currentColor;
+        } else {
+            circle.style.backgroundColor = circle.getAttribute('data-color');
+        }
     });
 }
 
@@ -297,5 +325,4 @@ function displayColorOptions(display) {
     } else {
         colorContainer.style.display = "none";
     }
-
 }
