@@ -152,11 +152,11 @@ if (canvas.getContext) {
 
     // Change size of pen based on parameter
     function changeSize(size) {
-        if (size < 3){
-            size = 3;
+        if (size < 1){
+            size = 1;
         }
-        if (size > 20) {
-            size = 20;
+        if (size > 50) {
+            size = 50;
         }
         if (currentTool !== toolTypes.ERASER) {
             penSize = size;

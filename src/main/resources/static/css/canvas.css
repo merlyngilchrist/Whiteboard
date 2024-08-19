@@ -149,6 +149,10 @@ button img {
 
 
 /* Color selection */
+#colorButtonsContainer {
+
+}
+
 .menuItem .colorCircle, .menuItem #currentColorCircle {
     border: 1px solid black;
     width: 85%;
