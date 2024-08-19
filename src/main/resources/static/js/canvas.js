@@ -255,14 +255,17 @@ function selectShapeTool(shape) {
         case "circle":
             currentTool = toolTypes.CIRCLE;
             selectButton("circleButton");
+            selectCursor("circleButton");
             break;
         case "square":
             currentTool = toolTypes.SQUARE;
             selectButton("squareButton");
+            selectCursor("squareButton")
             break;
         case "triangle":
             currentTool = toolTypes.TRIANGLE;
             selectButton("triangleButton");
+            selectCursor("triangleButton")
             break;
     }
 }
