@@ -12,6 +12,7 @@
 
 body {
     background-color: rgb(222, 202, 255);
+    overflow: hidden;
 }
 
 #whiteboard{
@@ -218,6 +219,8 @@ button img {
     display: none;
     z-index: 10;
 }
+
+
 
 /* Cursor Updating */
 .pen-cursor {
