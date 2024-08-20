@@ -96,8 +96,12 @@ button img {
     top: 55.9%;
 }
 
-#colorPickerButton {
+#textButton {
     top: 61.9%;
+}
+
+#colorPickerButton {
+    top: 67.9%;
     border-bottom-right-radius: 30%;
 }
 
@@ -163,11 +167,15 @@ button img {
 }
 
 .menuItem:has(#currentColorCircle) {
-    display: none;
+    border-top-left-radius: 30%;
+    border-bottom-left-radius: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 38%;
 }
 
 .menuItem:has(.colorCircle) {
-    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -175,19 +183,46 @@ button img {
     height: 60px;
 }
 
+#colorButtonsContainer .menuItem { /* Color select buttons */
+    width: 3%;
+    height: 45px;
+}
+
+/* 5% per row */
+.colorSelectRow1 .menuItem {
+    top: 30.5%;
+}
+.colorSelectRow2 .menuItem {
+    top: 35.5%;
+}
+/* center around: 38% */
+.colorSelectRow3 .menuItem {
+    top: 40.5%;
+}
+.colorSelectRow4 .menuItem {
+    top: 45.5%;
+}
+
+/* 3% per column */
+.colorSelectCol1 {
+    right: 12.5%;
+}
+.colorSelectCol2 {
+    right: 9.5%;
+}
+.colorSelectCol3 {
+    right: 6.5%;
+}
+.colorSelectCol4 {
+    right: 3.5%;
+}
+
+
 #colorBlackButton {
     border-top-left-radius: 30%;
-    left: 42%;
 }
-#colorYellowButton {
-    left: 46%;
-}
-#colorRedButton {
-    left: 50%;
-}
-#colorBlueButton {
+#colorLightGreyButton {
     border-top-right-radius: 30%;
-    left: 54%;
 }
 
 .selectedColor {

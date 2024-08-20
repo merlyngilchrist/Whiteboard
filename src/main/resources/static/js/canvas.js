@@ -3,7 +3,7 @@ const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
-let penSize = 5;
+let penSize = 10;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -13,7 +13,8 @@ let buttons = [
     "circleButton",
     "squareButton",
     "triangleButton",
-    "colorPickerButton"
+    "colorPickerButton",
+    "textButton"
 ];
 const toolTypes = Object.freeze({
     PEN: 0,
@@ -21,18 +22,28 @@ const toolTypes = Object.freeze({
     FILL: 2,
     CIRCLE: 3,
     SQUARE: 4,
-    TRIANGLE: 5
+    TRIANGLE: 5,
+    TEXT: 6
 });
 const colors = Object.freeze({
+    // 12 Main colors
     BLACK: "black",
+    DARKGREY: "#707b7c",
+    LIGHTGREY: "#bfc9ca",
+    RED: "red",
     GREEN: "green",
     BLUE: "blue",
     YELLOW: "yellow",
     PURPLE: "rebeccapurple",
-    WHITE: "white",
+    ORANGE: "orange",
     PINK: "magenta",
+    CYAN: "cyan",
+    TEAL: "#58d68d",
+
+
+    // Dev colors
     JAXEN_ORANGE: '#F39C12',
-    MERLYN_RED: '#FF0000',
+    MERLYN_RED: '#FF1010',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#41FF07'
 });
@@ -42,8 +53,8 @@ let undoStack = [];
 let redoStack = [];
 
 window.onload = function() {
-    createColorDisplaysInColorCircles();
     changeColor(currentColor);
+    createColorDisplaysInColorCircles();
     testConnection();
 };
 
@@ -156,17 +167,26 @@ if (canvas.getContext) {
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
+
+    function colorButtonPressed(button) {
+        let color = button.id; // "magenta"
+
+        changeColor(color);
+    }
+
     // Change color based on parameter
     /**
      *
      * @param color
      */
     function changeColor(color) {
+
         if (currentTool !== toolTypes.ERASER) {
             currentColor = color;
         }
         context.strokeStyle = color;
         selectColorOption(color);
+        updateCurrentColorCircle();
     }
 
     // Change size of pen based on parameter
@@ -268,6 +288,12 @@ function selectFillTool() {
     selectCursor("fillButton");
 }
 
+function selectTextTool() {
+    currentTool = toolTypes.TEXT;
+    selectButton("textButton");
+    //selectCursor("fillButton")
+}
+
 function increasePenSizeButton() {
     changeSize(++penSize);
 }
@@ -317,7 +343,12 @@ function selectButton(buttonID) {
     selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
-    displayColorOptions((buttonID !== "eraserButton"));
+    if (currentTool === toolTypes.ERASER) {
+        displayColorOptions('hide');
+    } else {
+        displayColorOptions('false');
+    }
+
 }
 
 /**
@@ -326,13 +357,18 @@ function selectButton(buttonID) {
  */
 function selectColorOption(color) {
     document.querySelectorAll('.colorCircle').forEach(circle => {
-        const colorOnCircle = circle.getAttribute('data-color');
-        if (colorOnCircle.localeCompare(color) === 0) {
+        const buttonColor = circle.id;
+        if (buttonColor.localeCompare(color) === 0) {
             circle.parentElement.classList.add("selectedColor");
         } else {
             circle.parentElement.classList.remove("selectedColor");
         }
     });
+}
+
+function updateCurrentColorCircle() {
+    const currentColorCircle = document.getElementById("currentColorCircle");
+    currentColorCircle.style.backgroundColor = currentColor;
 }
 
 function enableCursorCircle() {
@@ -354,6 +390,25 @@ function moveCursorCircle(event) {
 }
 
 function createColorDisplaysInColorCircles() {
+    let colorNum = 0;
+    const keys = Object.keys(colors);
+
+    let colorSet1 = document.getElementById("colorSet1");
+    for (let r = 0; r < colorSet1.children.length; r++) { //Each row of colorSet1
+
+        let row = colorSet1.children.item(r);
+
+        for (let m = 0; m < row.children.length; m++, colorNum++) { //Each menuItem in row, adds to colorNum each time
+            let colorCircle = row.children.item(m).children.item(0);
+            const key = keys[colorNum];
+            const color = colors[key];
+            colorCircle.style.backgroundColor = color;
+            colorCircle.id = color;
+        }
+
+    }
+
+    /*
     document.querySelectorAll('.colorCircle').forEach(circle => {
         if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
             circle.style.backgroundColor = currentColor;
@@ -361,17 +416,30 @@ function createColorDisplaysInColorCircles() {
             circle.style.backgroundColor = circle.getAttribute('data-color');
         }
     });
+
+     */
 }
 
 /**
- *
- * @param display
+ * Hides/displays color select menu and color menu
+ * @param display "false" = hide select menu, "true" = show select menu, "hide" = hide all color menus (for eraser)
  */
 function displayColorOptions(display) {
     const colorContainer = document.getElementById("colorButtonsContainer");
-    if (display) {
-        colorContainer.style.display = "";
-    } else {
+    const currentColorButton = document.getElementById("currentColorCircle").parentElement;
+    if (display.localeCompare("true") === 0) { //Display color select elements
+        colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0)
+        if (colorSelectIsShown) {
+            colorContainer.style.display = "none";
+        } else {
+            colorContainer.style.display = "";
+        }
+        currentColorButton.style.display = "";
+    } else if (display.localeCompare("hide") === 0) { //Hide all color stuff
         colorContainer.style.display = "none";
+        currentColorButton.style.display = "none";
+    } else if (display.localeCompare("false") === 0) { //Don't display select menu but display current color button
+        colorContainer.style.display = "none";
+        currentColorButton.style.display = "";
     }
 }

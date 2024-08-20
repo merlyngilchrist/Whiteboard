@@ -39,7 +39,10 @@
         <button type="button" onclick="selectColorPicker()" class="unselectedTool" id="colorPickerButton">
             <img src="/images/dropper.png" alt="Color picker tool">
         </button>
-
+        <!-- Text button -->
+        <button type="button" onclick="selectTextTool()" class="unselectedTool" id="textButton">
+            <img src="/images/letter-t-.png" alt="Text tool">
+        </button>
         <!-- Undo button -->
         <button type="button" onclick="undoButton()" class="unselectedTool" id="undoButton">
             <img src="/images/undo.png" alt="Undo">
@@ -63,21 +66,61 @@
         </div>
 
         <!-- Color buttons -->
-        <div class="menuItem" id="colorMenuButton">
+        <div class="menuItem" id="colorMenuButton" onclick="displayColorOptions('true')">
             <div id="currentColorCircle"></div>
         </div>
         <div id="colorButtonsContainer">
-            <div class="menuItem" onclick="changeColor('black')" id="colorBlackButton">
-                <div class="colorCircle" data-color="black"></div>
-            </div>
-            <div class="menuItem" onclick="changeColor('yellow')" id="colorYellowButton">
-                <div class="colorCircle" data-color="yellow"></div>
-            </div>
-            <div class="menuItem" onclick="changeColor('red')" id="colorRedButton">
-                <div class="colorCircle" data-color="red"></div>
-            </div>
-            <div class="menuItem" onclick="changeColor('blue')" id="colorBlueButton">
-                <div class="colorCircle" data-color="blue"></div>
+            <div id="colorSet1">
+                <div class="colorSelectRow1">
+                    <div class="menuItem colorSelectCol1">
+                        <div class="colorCircle" onclick="colorButtonPressed(this)"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol2" onclick="changeColor('grey')" id="colorGreyButton">
+                        <div class="colorCircle" data-color="grey"></div>
+                    </div>
+                </div>
+                <div class="colorSelectRow2">
+                    <div class="menuItem colorSelectCol1" onclick="changeColor('yellow')" id="colorYellowButton">
+                        <div class="colorCircle" data-color="yellow"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol2" onclick="changeColor('red')" id="colorRedButton">
+                        <div class="colorCircle" data-color="red"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol3" onclick="changeColor('blue')" id="colorBlueButton">
+                        <div class="colorCircle" data-color="blue"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol4" onclick="changeColor('green')" id="colorGreenButton">
+                        <div class="colorCircle" data-color="green"></div>
+                    </div>
+                </div>
+                <div class="colorSelectRow3">
+                    <div class="menuItem colorSelectCol1" onclick="changeColor('rebeccapurple')" id="colorRebeccaPurpleButton">
+                        <div class="colorCircle" data-color="rebeccapurple"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol2" onclick="changeColor('orange')" id="colorOrangeButton">
+                        <div class="colorCircle" data-color="orange"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol3" onclick="changeColor('magenta')" id="colorMagentaButton">
+                        <div class="colorCircle" data-color="magenta"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol4" onclick="changeColor(colors.ZACH_LIME)" id="colorZachLimeButton">
+                        <div class="colorCircle" data-color="#41FF07"></div>
+                    </div>
+                </div>
+                <div class="colorSelectRow4">
+                    <div class="menuItem colorSelectCol1" onclick="changeColor(colors.OWEN_PURPLE)" id="colorOwenPurpleButton">
+                        <div class="colorCircle" data-color="#642D96"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol2" onclick="changeColor('cyan')" id="colorCyanButton">
+                        <div class="colorCircle" data-color="#00FFFF"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol3" onclick="changeColor('teal')" id="colorTealButton">
+                        <div class="colorCircle" data-color="#008080"></div>
+                    </div>
+                    <div class="menuItem colorSelectCol4" onclick="changeColor('pink')" id="colorPinkButton">
+                        <div class="colorCircle" data-color="#FFC0CB"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
