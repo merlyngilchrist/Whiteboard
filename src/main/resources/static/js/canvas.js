@@ -55,6 +55,7 @@ let redoStack = [];
 window.onload = function() {
     changeColor(currentColor);
     createColorDisplaysInColorCircles();
+    displayColorOptions('false');
     testConnection();
 };
 
@@ -155,7 +156,7 @@ if (canvas.getContext) {
         // sendDrawing(event, "draw");
     }
 
-   //Sends Drawing to Server
+
     /**
      *
      * @param event
@@ -189,7 +190,7 @@ if (canvas.getContext) {
         updateCurrentColorCircle();
     }
 
-    // Change size of pen based on parameter
+
     /**
      *
      * @param size
@@ -265,7 +266,7 @@ function selectPenTool() {
 function selectEraserTool() {
     currentTool = toolTypes.ERASER;
     selectButton("eraserButton");
-    changeColor(colors.WHITE);
+    changeColor('white');
     selectCursor("eraserButton");
 }
 
