@@ -205,24 +205,29 @@ button img {
 
 /* 3% per column */
 .colorSelectCol1 {
-    right: 12.5%;
-}
-.colorSelectCol2 {
     right: 9.5%;
 }
-.colorSelectCol3 {
+.colorSelectCol2 {
     right: 6.5%;
 }
-.colorSelectCol4 {
+.colorSelectCol3 {
     right: 3.5%;
 }
 
-
-#colorBlackButton {
+.colorSelectRow1 .colorSelectCol1:first-child {
     border-top-left-radius: 30%;
 }
-#colorLightGreyButton {
+
+.colorSelectRow1 .colorSelectCol3:last-child {
     border-top-right-radius: 30%;
+}
+
+.colorSelectRow4 .colorSelectCol3:last-child {
+    border-bottom-right-radius: 30%;
+}
+
+.colorSelectRow4 .colorSelectCol1:first-child {
+    border-bottom-left-radius: 30%;
 }
 
 .selectedColor {

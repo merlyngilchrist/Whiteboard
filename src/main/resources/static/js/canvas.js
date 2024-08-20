@@ -55,6 +55,7 @@ let redoStack = [];
 window.onload = function() {
     changeColor(currentColor);
     createColorDisplaysInColorCircles();
+    displayColorOptions('false');
     testConnection();
 };
 
@@ -112,6 +113,59 @@ if (canvas.getContext) {
             changeSize(--penSize);
         }
     });
+    document.addEventListener("keydown", function (event) {
+        /*
+        * Ctrl + Z - UNDO
+        * Ctrl + Y - REDO
+        * P        - SELECT PEN
+        * E        - SELECT ERASER
+        * F        - SELECT FILL
+        * S        - SELECT SQUARE
+        * C        - SELECT CIRCLE
+        * D        - SELECT TRIANGLE
+        * I        - SELECT DROPPER
+        * T        - SELECT TEXT
+        * -        - PEN SIZE DOWN
+        * =        - PEN SIZE UP
+         */
+
+        if (event.key.toLowerCase() === 'p') {
+            selectPenTool();
+        }
+        else if (event.key.toLowerCase() === 'e') {
+            selectEraserTool();
+        }
+        else if (event.key.toLowerCase() === 'f') {
+            selectFillTool();
+        }
+        else if (event.key.toLowerCase() === 's') {
+            selectShapeTool('square');
+        }
+        else if (event.key.toLowerCase() === 'c') {
+            selectShapeTool('circle');
+        }
+        else if (event.key.toLowerCase() === 'd') {
+            selectShapeTool("triangle");
+        }
+        else if (event.key.toLowerCase() === 'i') {
+            selectColorPicker();
+        }
+        else if (event.key.toLowerCase() === 't') {
+            selectTextTool();
+        }
+        else if (event.key === '-' || event.key === '_') {
+            decreasePenSizeButton();
+        }
+        else if (event.key === '=' || event.key === '+') {
+            increasePenSizeButton();
+        }
+        else if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+            undoButton();
+        }
+        else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+            redoButton();
+        }
+    });
 
     changeSize(penSize);
     context.lineCap = "round";
@@ -155,7 +209,6 @@ if (canvas.getContext) {
         // sendDrawing(event, "draw");
     }
 
-   //Sends Drawing to Server
     /**
      *
      * @param event
@@ -189,7 +242,6 @@ if (canvas.getContext) {
         updateCurrentColorCircle();
     }
 
-    // Change size of pen based on parameter
     /**
      *
      * @param size
@@ -265,7 +317,7 @@ function selectPenTool() {
 function selectEraserTool() {
     currentTool = toolTypes.ERASER;
     selectButton("eraserButton");
-    changeColor(colors.WHITE);
+    changeColor('white');
     selectCursor("eraserButton");
 }
 
@@ -427,6 +479,7 @@ function createColorDisplaysInColorCircles() {
 function displayColorOptions(display) {
     const colorContainer = document.getElementById("colorButtonsContainer");
     const currentColorButton = document.getElementById("currentColorCircle").parentElement;
+    let colorSelectIsShown;
     if (display.localeCompare("true") === 0) { //Display color select elements
         colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0)
         if (colorSelectIsShown) {
