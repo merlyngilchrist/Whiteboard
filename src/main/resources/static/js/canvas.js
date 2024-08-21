@@ -24,7 +24,8 @@ const toolTypes = Object.freeze({
     CIRCLE: 3,
     SQUARE: 4,
     TRIANGLE: 5,
-    TEXT: 6
+    TEXT: 6,
+    COLOR_PICKER: 7
 });
 const colors = Object.freeze({
     // 12 Main colors
@@ -347,6 +348,7 @@ function redoButton() {
 }
 
 function selectColorPicker() {
+    currentTool = toolTypes.COLOR_PICKER;
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
@@ -416,6 +418,12 @@ function selectButton(buttonID) {
         displayColorOptions('hide');
     } else {
         displayColorOptions('false');
+    }
+
+    if (currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER) {
+        hideElementByID("penSizeMenu", true);
+    } else {
+        hideElementByID("penSizeMenu", false);
     }
 
 }
@@ -489,17 +497,31 @@ function displayColorOptions(display) {
     if (display.localeCompare("true") === 0) { //Display color select elements
         colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0)
         if (colorSelectIsShown) {
-            colorContainer.style.display = "none";
+            hideElementByHTMLObject(colorContainer, true);
         } else {
-            colorContainer.style.display = "";
+            hideElementByHTMLObject(colorContainer, false);
         }
-        currentColorButton.style.display = "";
+        hideElementByHTMLObject(currentColorButton, false);
     } else if (display.localeCompare("hide") === 0) { //Hide all color stuff
-        colorContainer.style.display = "none";
-        currentColorButton.style.display = "none";
+        hideElementByHTMLObject(colorContainer, true);
+        hideElementByHTMLObject(currentColorButton, true);
+
     } else if (display.localeCompare("false") === 0) { //Don't display select menu but display current color button
-        colorContainer.style.display = "none";
-        currentColorButton.style.display = "";
+        hideElementByHTMLObject(colorContainer, true);
+        hideElementByHTMLObject(currentColorButton, false);
+    }
+}
+
+function hideElementByID(id, hide) {
+    const element = document.getElementById(id);
+    hideElementByHTMLObject(element, hide);
+}
+
+function hideElementByHTMLObject(object, hide) {
+    if (hide) {
+        object.style.display = "none";
+    } else {
+        object.style.display = "";
     }
 }
 
