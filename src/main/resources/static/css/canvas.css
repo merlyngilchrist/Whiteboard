@@ -38,6 +38,10 @@ button, .menuItem {
     height: 6%;
 }
 
+#leftBarButtons button:not(.selectedTool):hover, #redoButton:hover, #undoButton:hover {
+    background-color: #EEE;
+}
+
 .menuItem {
     background-color: white;
     left: auto;
@@ -150,6 +154,20 @@ button img {
 #decreasePenSizeButton:active {
     -webkit-filter:invert(100%);
     filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+}
+
+#sessionCodeContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    padding: 3px 5px;
+    min-width: 155px;
+    border-bottom-right-radius: 30px;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
 }
 
 

@@ -53,12 +53,24 @@ let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
 
+
+
 window.onload = function() {
     changeColor(currentColor);
     createColorDisplaysInColorCircles();
     displayColorOptions('false');
     testConnection();
+    setSessionCodeText("42069");
 };
+
+/**
+ *
+ * @param code
+ */
+function setSessionCodeText(code) {
+    const textContainer = document.getElementById("sessionCodeContainer");
+    textContainer.innerHTML = "Session code: " + code;
+}
 
 // JavaScript test connection with Java
 function testConnection(){
@@ -219,11 +231,7 @@ if (canvas.getContext) {
         // sendDrawing(event, "draw");
     }
 
-    /**
-     *
-     * @param event
-     * @param action
-     */
+
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -468,17 +476,6 @@ function createColorDisplaysInColorCircles() {
         }
 
     }
-
-    /*
-    document.querySelectorAll('.colorCircle').forEach(circle => {
-        if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
-            circle.style.backgroundColor = currentColor;
-        } else {
-            circle.style.backgroundColor = circle.getAttribute('data-color');
-        }
-    });
-
-     */
 }
 
 /**
@@ -503,5 +500,25 @@ function displayColorOptions(display) {
     } else if (display.localeCompare("false") === 0) { //Don't display select menu but display current color button
         colorContainer.style.display = "none";
         currentColorButton.style.display = "";
+    }
+}
+
+function showRedoButton(show) {
+    if (show) {
+        document.getElementById("redoButton").classList.remove("disabled");
+        document.getElementById("undoButton").style.borderTopRightRadius = '0%';
+    } else {
+        document.getElementById("redoButton").classList.add("disabled");
+        document.getElementById("undoButton").style.borderTopRightRadius = '30%';
+    }
+}
+
+function showUndoButton(show) {
+    if (show) {
+        document.getElementById("undoButton").classList.remove("disabled");
+        document.getElementById("redoButton").style.borderTopLeftRadius = '0%';
+    } else {
+        document.getElementById("undoButton").classList.add("disabled");
+        document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
     }
 }
