@@ -281,6 +281,7 @@ if (canvas.getContext) {
             showRedoButton(true);
         }
     }
+
     function redo() {
         if (redoStack.length > 0){
             undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));

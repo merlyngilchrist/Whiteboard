@@ -38,6 +38,10 @@ button, .menuItem {
     height: 6%;
 }
 
+#leftBarButtons button, #undoButton, #redoButton{
+    max-width: fit-content;
+}
+
 #leftBarButtons button:not(.selectedTool):hover, #redoButton:hover, #undoButton:hover {
     background-color: #EEE;
 }
