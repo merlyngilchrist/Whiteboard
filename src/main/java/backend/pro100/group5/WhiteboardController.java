@@ -1,5 +1,7 @@
 package backend.pro100.group5;
 
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ public class WhiteboardController {
         System.out.println("Java files have received the request for JavaScript");
         return "Connection Successful!";
     }
+
 
     /**
      * Automatically gets called by Springboot to use index.html as the displayed html file

@@ -17,9 +17,7 @@ connection.start().then(() => {
     joinSession();
 }).catch(err => console.error(err));
 
-function joinSession(){
-    sessionId = prompt("Enter session ID:", "default-session");
-}
+
 
 canvas.addEventListener("mousedown", (event) =>{
     drawing = true;
@@ -50,16 +48,6 @@ function draw(x, y, action){
 }
 
 //Allows to draw on the Server
-function drawFromServer(x, y, action){
-    if (action === "start"){
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-    }else if (action === "draw"){
-        ctx.lineTo(x, y);
-        ctx.stroke();
-    }else if (action === "end"){
-        ctx.closePath();
-    }
-}
+
 
 

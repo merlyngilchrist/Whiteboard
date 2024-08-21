@@ -5,6 +5,9 @@ public class DrawingData {
     private int x;
     private int y;
     private String action;
+    private String color;
+    private int tool;
+    private int size;
 
     public int getX() {
         return x;
@@ -28,5 +31,29 @@ public class DrawingData {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public int getTool() {
+        return tool;
+    }
+
+    public void setTool(int tool) {
+        this.tool = tool;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

@@ -28,9 +28,13 @@ public class SignalRService {
 
         HttpEntity<Object> request = new HttpEntity<>(message, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(url + "/send?target=" + target, request, String.class);
-
-        System.out.println("Response: " + response.getBody());
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url + "/send?target" + target, request, String.class);
+            System.out.println("SignalR Response: " + response.getBody());
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error sending SignalR message: " + e.getMessage());
+        }
     }
 
 
