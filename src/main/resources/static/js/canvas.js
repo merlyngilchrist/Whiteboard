@@ -116,6 +116,7 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
+    canvas.addEventListener('mousemove', moveCursorCircle); // Cursor circle
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', draw);
@@ -184,7 +185,6 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
-    enableCursorCircle();
     selectCursor("penButton");
 
     /**
@@ -414,17 +414,17 @@ function selectButton(buttonID) {
     selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
+
     if (currentTool === toolTypes.ERASER) {
         displayColorOptions('hide');
     } else {
         displayColorOptions('false');
     }
 
-    if (currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER) {
-        hideElementByID("penSizeMenu", true);
-    } else {
-        hideElementByID("penSizeMenu", false);
-    }
+    // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
+    let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
+    hideElementByID("penSizeMenu", !currentToolIsFillOrColorPicker);
+    hideElementByID("cursorCircle", !currentToolIsFillOrColorPicker);
 
 }
 
@@ -446,11 +446,6 @@ function selectColorOption(color) {
 function updateCurrentColorCircle() {
     const currentColorCircle = document.getElementById("currentColorCircle");
     currentColorCircle.style.backgroundColor = currentColor;
-}
-
-function enableCursorCircle() {
-    cursorCircle.style.display = 'block';
-    canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
 /**

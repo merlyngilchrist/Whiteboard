@@ -7,18 +7,24 @@
     </head>
     <body>
     <header>
-            <h1 class="header-title">Pen Together</h1>
+        <h1 class="header-title">Pen Together</h1>
     </header>
-        <div class="container">
-            <img src="/images/PenTogetherLogo.png" alt="Pen Together Logo" class="logo">
-            <div class="option">
-                <form action="/canvas" method="post">
-                    <button class="btn">Host Session</button>
-                </form>
-            </div>
-            <div class="option">
-                <button class="btn">Join Session</button>
-            </div>
+
+    <video autoplay muted loop id="backgroundVideo">
+        <source src="/static/videos/PenTogetherHomeVideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <img src="/images/PenTogetherLogo.png" alt="Pen Together Logo" class="logo">
+        <div class="option">
+            <form action="/canvas" method="post">
+                <button class="btn">Host Session</button>
+            </form>
         </div>
+        <div class="option">
+            <button class="btn">Join Session</button>
+        </div>
+    </div>
     </body>
 </html>
