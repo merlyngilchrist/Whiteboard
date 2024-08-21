@@ -175,8 +175,8 @@ if (canvas.getContext) {
     selectCursor("penButton");
 
     /**
-     *
-     * @param event
+     * Begins a path when clicked
+     * @param event = the 'mousedown' event listener
      */
     function startDrawing(event) {
         drawing = true;
@@ -197,8 +197,8 @@ if (canvas.getContext) {
     }
 
     /**
-     *
-     * @param event
+     * Draws on the screen, but only when drawing is set to 'true'
+     * @param event = 'mousemove' event listener
      */
     function draw(event) {
         if (!drawing) return;
