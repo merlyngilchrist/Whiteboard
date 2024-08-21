@@ -3,6 +3,7 @@ const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
+let lastX, lastY;
 let penSize = 10;
 let buttons = [
     "penButton",
@@ -92,7 +93,7 @@ function testConnection(){
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
-    // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas - Owen
     const devicePixelRatio = window.devicePixelRatio;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * devicePixelRatio;
@@ -179,14 +180,19 @@ if (canvas.getContext) {
      */
     function startDrawing(event) {
         drawing = true;
-        draw(event);
+        context.beginPath();
+        // The idea to use lastX and lastY in order to fix the undo/redo leaving a singular dot behind was not mine and came from ChatGPT - Owen
+        lastX = event.clientX - rect.left;
+        lastY = event.clientY - rect.top;
+        context.moveTo(lastX, lastY);
         saveCanvas();
         // sendDrawing(event, "start");
     }
 
     function stopDrawing() {
         drawing = false;
-        context.beginPath();
+        lastX = null;
+        lastY = null;
         // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
 
@@ -200,10 +206,14 @@ if (canvas.getContext) {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        context.lineTo(x,y);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(x,y);
+        if (x !== lastX || y !== lastY) {
+            context.lineTo(x, y);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(x, y);
+            lastX = x;
+            lastY = y;
+        }
         enableCursorCircle();
 
         // sendDrawing(event, "draw");
@@ -227,10 +237,9 @@ if (canvas.getContext) {
         changeColor(color);
     }
 
-    // Change color based on parameter
     /**
-     *
-     * @param color
+     * This changes the color of the pen to whatever is passed in as a parameter.
+     * @param color = any item from the colors enum or any Hex/RGB value
      */
     function changeColor(color) {
 
