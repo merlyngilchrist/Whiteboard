@@ -54,8 +54,6 @@ let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
 
-
-
 window.onload = function() {
     changeColor(currentColor);
     createColorDisplaysInColorCircles();
@@ -85,9 +83,6 @@ function testConnection(){
         });
 }
 
-
-
-
 //SignalR connection
 // const connection = new signalR.HubConnectionBuilder()
 //     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
@@ -102,7 +97,6 @@ function testConnection(){
 // connection.start().then(() => {
 //     joinSession();
 // }).catch(err => console.error(err));
-
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -186,6 +180,7 @@ if (canvas.getContext) {
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
     selectCursor("penButton");
+    checkUndoRedoButtons();
 
     /**
      * Begins a path when clicked
@@ -232,17 +227,14 @@ if (canvas.getContext) {
         // sendDrawing(event, "draw");
     }
 
-
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
-
     function colorButtonPressed(button) {
         let color = button.id; // "magenta"
-
         changeColor(color);
     }
 
@@ -276,12 +268,27 @@ if (canvas.getContext) {
         penSizeText.innerHTML = `${penSize}` + "px";
     }
 
+    function checkUndoRedoButtons() {
+        if (undoStack.length === 0) {
+            showUndoButton(false);
+        } else {
+            showUndoButton(true);
+        }
+
+        if (redoStack.length === 0) {
+            showRedoButton(false);
+        } else {
+            showRedoButton(true);
+        }
+    }
+
     function redo() {
         if (redoStack.length > 0){
             undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
             let nextState = redoStack.pop();
             context.putImageData(nextState,0,0);
         }
+        checkUndoRedoButtons();
     }
 
     function undo() {
@@ -290,13 +297,14 @@ if (canvas.getContext) {
             let previousState = undoStack.pop();
             context.putImageData(previousState,0,0);
         }
+        checkUndoRedoButtons();
     }
 
     function saveCanvas() {
         redoStack = [];
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
+        checkUndoRedoButtons();
     }
-
 }
 
 function removeCursors() {
@@ -522,20 +530,20 @@ function hideElementByHTMLObject(object, hide) {
 
 function showRedoButton(show) {
     if (show) {
-        document.getElementById("redoButton").classList.remove("disabled");
+        hideElementByID("redoButton",false);
         document.getElementById("undoButton").style.borderTopRightRadius = '0%';
     } else {
-        document.getElementById("redoButton").classList.add("disabled");
+        hideElementByID("redoButton",true);
         document.getElementById("undoButton").style.borderTopRightRadius = '30%';
     }
 }
 
 function showUndoButton(show) {
     if (show) {
-        document.getElementById("undoButton").classList.remove("disabled");
+        hideElementByID("undoButton",false);
         document.getElementById("redoButton").style.borderTopLeftRadius = '0%';
     } else {
-        document.getElementById("undoButton").classList.add("disabled");
+        hideElementByID("undoButton",true);
         document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
     }
 }
