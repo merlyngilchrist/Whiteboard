@@ -4,6 +4,7 @@
         <title>Pen Together</title>
         <link rel="stylesheet" href="/css/style.css">
         <link rel="icon" href="/images/PenTogetherLogo.png" type="image/jpg">
+        <script src="/js/script.js" defer></script>
     </head>
     <body>
     <header>
@@ -23,7 +24,25 @@
             </form>
         </div>
         <div class="option">
-            <button class="btn">Join Session</button>
+            <button class="btn" onclick="displayJoinUIContainer(true)">Join Session</button>
+        </div>
+    </div>
+
+
+    <div id="joinUIContainer" class="hidden">
+        <div id="backgroundOverlay" onclick="displayJoinUIContainer(false)"></div>
+        <div id="joinUIMenu">
+            <h1>Enter session code</h1>
+            <label>
+                <input type="text">
+            </label>
+            <br>
+            <label>
+                <button class="btn" onclick="joinSession()">
+                    Join
+                </button>
+            </label>
+
         </div>
     </div>
     </body>

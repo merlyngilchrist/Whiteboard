@@ -20,16 +20,21 @@ body {
     z-index: -1; /* Puts the video behind other content */
 }
 
-/* Center the container */
+/* Merged .container styles */
 .container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Centers the container */
     text-align: center; /* Center-aligns text within the container */
-    z-index: 1; /* Ensures the container is above the video */
+    z-index: 2; /* Updated to avoid conflict with overlay */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 100px);
+    gap: 20px;
 }
-
 
 .header {
     position: absolute;
@@ -44,17 +49,9 @@ body {
     max-width: 300px;
     margin-bottom: 20px;
 }
+
 .header-title {
     margin: 0;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 100px);
-    gap: 20px;
 }
 
 .option {
@@ -87,4 +84,69 @@ footer {
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+/* Container that holds both the overlay and menu */
+#joinUIContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000; /* Ensure it’s above other elements */
+}
+
+/* Show the container when needed */
+#joinUIContainer.active {
+    display: block;
+}
+
+/* Overlay that covers the entire page */
+#backgroundOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Transparent black overlay */
+    z-index: 1001;
+}
+
+/* Centered menu */
+#joinUIMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 40%;
+    max-height: 80%;
+    min-height: 200px;
+    background-color: white;
+    padding: 20px;
+    z-index: 1002; /* Above the overlay */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#joinUIMenu .btn {
+    width: 130px;
+    padding: 10px 20px;
+    font-size: 20px;
+    position: absolute;
+    left: 50%; /* Center horizontally relative to the parent */
+    transform: translateX(-50%) translateY(145%); /* Adjust by half the button's width */
+}
+
+#joinUIMenu input {
+    width: 75%;
+    padding: 10px 20px;
+    font-size: 16px;
+    position: absolute;
+    left: 50%; /* Center horizontally relative to the parent */
+    transform: translateX(-50%); /* Adjust by half the button's width */
+}
+
+/* Hidden class */
+.hidden {
+    display: none;
 }
