@@ -51,7 +51,9 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
-
+/**
+ * initializes basic settings when browser loads.
+ */
 window.onload = function() {
     changeColor(currentColor);
     createColorDisplaysInColorCircles();
@@ -60,6 +62,9 @@ window.onload = function() {
 };
 
 // JavaScript test connection with Java
+/**
+ * tests connection with java code, if no connection sends error.
+ */
 function testConnection(){
     fetch("/test-connection")
         .then(response => response.text())
@@ -174,8 +179,8 @@ if (canvas.getContext) {
     selectCursor("penButton");
 
     /**
-     *
-     * @param event
+     * starts drawing on the canvas, saves the canvas.
+     * @param event event from event listener.
      */
     function startDrawing(event) {
         drawing = true;
@@ -184,6 +189,9 @@ if (canvas.getContext) {
         // sendDrawing(event, "start");
     }
 
+    /**
+     * stops drawing on the canvas.
+     */
     function stopDrawing() {
         drawing = false;
         context.beginPath();
@@ -191,8 +199,8 @@ if (canvas.getContext) {
     }
 
     /**
-     *
-     * @param event
+     * draws at mouse position while drawing.
+     * @param event event from event listener.
      */
     function draw(event) {
         if (!drawing) return;
@@ -210,9 +218,9 @@ if (canvas.getContext) {
     }
 
     /**
-     *
-     * @param event
-     * @param action
+     * sends drawings to signalR.
+     * @param event event from event listener.
+     * @param action action being sent.
      */
     function sendDrawing(event, action){
         const x = event.clientX - rect.left;
@@ -220,7 +228,10 @@ if (canvas.getContext) {
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
-
+    /**
+     * gets id of the color button then calls changeColor.
+     * @param button button to get the id of.
+     */
     function colorButtonPressed(button) {
         let color = button.id; // "magenta"
 
@@ -229,22 +240,21 @@ if (canvas.getContext) {
 
     // Change color based on parameter
     /**
-     *
-     * @param color
+     * sets the color, also calls selectColorOption, and updateCurrentColorCircle.
+     * @param color color to be changed to.
      */
     function changeColor(color) {
-
         if (currentTool !== toolTypes.ERASER) {
             currentColor = color;
         }
         context.strokeStyle = color;
-        selectColorOption(color);
+        selectColorOption();
         updateCurrentColorCircle();
     }
 
     /**
-     *
-     * @param size
+     * changes size of brush unless size is too big(>50) or small(<1), also updates ui to show correct size.
+     * @param size size pen is being changed to.
      */
     function changeSize(size) {
         if (size < 1){
@@ -258,6 +268,10 @@ if (canvas.getContext) {
         penSizeText.innerHTML = `${penSize}` + "px";
     }
 
+    /**
+     * redoes an undo and displays it on the screen,
+     * puts redo data into undo stack, removes it from redo stack.
+     */
     function redo() {
         if (redoStack.length > 0){
             undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
@@ -266,6 +280,10 @@ if (canvas.getContext) {
         }
     }
 
+    /**
+     * undoes a previous draw and displays it on the screen,
+     * puts undo data into the redo stack, removes it from undo stack.
+     */
     function undo() {
         if (undoStack.length > 0){
             redoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
@@ -274,6 +292,9 @@ if (canvas.getContext) {
         }
     }
 
+    /**
+     * saves the canvas to the undo stack, clears the redo stack.
+     */
     function saveCanvas() {
         redoStack = [];
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
@@ -281,13 +302,16 @@ if (canvas.getContext) {
 
 }
 
+/**
+ * removes the following: 'pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor' from the screen
+ */
 function removeCursors() {
     document.body.classList.remove('pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor');
 }
 
 /**
- *
- * @param button
+ * removes existing cursor, then adds the new cursor.
+ * @param button button representing what cursor being selected.
  */
 function selectCursor(button) {
     removeCursors()
@@ -297,7 +321,7 @@ function selectCursor(button) {
     if (button.localeCompare("eraserButton") === 0) {
         document.body.classList.add('eraser-cursor');
     }
-    if (button.localeCompare("fillButton")===0) {
+    if (button.localeCompare("fillButton") === 0) {
         document.body.classList.add('fill-cursor');
     }
     if (button.localeCompare("colorPickerButton") === 0) {
@@ -308,12 +332,17 @@ function selectCursor(button) {
     }
 }
 
+/**
+ * sets current tool to pen, calls selectButton, and selectCursor.
+ */
 function selectPenTool() {
     currentTool = toolTypes.PEN;
     selectButton("penButton");
     selectCursor("penButton");
 }
-
+/**
+ * sets current tool to eraser, sets color to white, calls selectButton, and selectCursor.
+ */
 function selectEraserTool() {
     currentTool = toolTypes.ERASER;
     selectButton("eraserButton");
@@ -321,42 +350,61 @@ function selectEraserTool() {
     selectCursor("eraserButton");
 }
 
+/**
+ * calls undo.
+ */
 function undoButton() {
     undo();
 }
 
+/**
+ * calls redo.
+ */
 function redoButton() {
     redo();
 }
 
+/**
+ * calls selectButton and selectCursor.
+ */
 function selectColorPicker() {
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
-
+/**
+ * sets current tool to fill, calls selectButton, and selectCursor.
+ */
 function selectFillTool() {
     currentTool = toolTypes.FILL;
     selectButton("fillButton");
     selectCursor("fillButton");
 }
-
+/**
+ * sets current tool to text, calls selectButton, and selectCursor.
+ */
 function selectTextTool() {
     currentTool = toolTypes.TEXT;
     selectButton("textButton");
     //selectCursor("fillButton")
 }
 
+/**
+ * calls changeSize and adds 1 to penSize.
+ */
 function increasePenSizeButton() {
     changeSize(++penSize);
 }
 
+/**
+ * calls changeSize and subtracts 1 to penSize.
+ */
 function decreasePenSizeButton() {
     changeSize(--penSize);
 }
 
 /**
- *
- * @param shape
+ * sets current tool to selected shape, calls selectButton, and selectCursor.
+ * @param shape shape being selected
  */
 function selectShapeTool(shape) {
     switch (shape) {
@@ -379,8 +427,11 @@ function selectShapeTool(shape) {
 }
 
 /**
- *
- * @param buttonID
+ * loops through all buttons and sets the passed in button to the selectedTool and deselects the rest.
+ * Selects the passed in button.
+ * Changes size and color of the selected tool to current color and size.
+ * if the currentTool is the eraser, hides the color options, if it's not the eraser shows color options.
+ * @param buttonID id of button being selected.
  */
 function selectButton(buttonID) {
     buttons.forEach(button => {
@@ -404,13 +455,13 @@ function selectButton(buttonID) {
 }
 
 /**
- *
- * @param color
+ * loops through colors, if the button is the currentColor, adds selectedColor token.
+ * Otherwise, removes selectedColorToken.
  */
-function selectColorOption(color) {
+function selectColorOption() {
     document.querySelectorAll('.colorCircle').forEach(circle => {
         const buttonColor = circle.id;
-        if (buttonColor.localeCompare(color) === 0) {
+        if (buttonColor.localeCompare(currentColor) === 0) {
             circle.parentElement.classList.add("selectedColor");
         } else {
             circle.parentElement.classList.remove("selectedColor");
@@ -418,19 +469,25 @@ function selectColorOption(color) {
     });
 }
 
+/**
+ * updates currentColorCircle background color to the currentColor.
+ */
 function updateCurrentColorCircle() {
     const currentColorCircle = document.getElementById("currentColorCircle");
     currentColorCircle.style.backgroundColor = currentColor;
 }
 
+/**
+ * enables cursorCircle and adds an eventListener for moving the cursorCircle.
+ */
 function enableCursorCircle() {
     cursorCircle.style.display = 'block';
     canvas.addEventListener('mousemove', moveCursorCircle);
 }
 
 /**
- *
- * @param event
+ * moves the cursor circle to the mouse x, y.
+ * @param event event from event listener.
  */
 function moveCursorCircle(event) {
     cursorCircle.style.width = `${penSize}px`;
@@ -441,6 +498,9 @@ function moveCursorCircle(event) {
     cursorCircle.style.top = `${y}px`;
 }
 
+/**
+ * adds each color to the display
+ */
 function createColorDisplaysInColorCircles() {
     let colorNum = 0;
     const keys = Object.keys(colors);

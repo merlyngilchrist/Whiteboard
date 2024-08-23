@@ -17,6 +17,9 @@ connection.start().then(() => {
     joinSession();
 }).catch(err => console.error(err));
 
+/**
+ * gets a sessionID from the user
+ */
 function joinSession(){
     sessionId = prompt("Enter session ID:", "default-session");
 }
@@ -43,12 +46,24 @@ canvas.addEventListener("mouseup", () =>{
     }
 });
 
+/**
+ * draws at x,y coordinates?, then calls drawFromServer.
+ * @param x
+ * @param y
+ * @param action
+ */
 function draw(x, y, action){
     const message = JSON.stringify({sessionId: sessionId, x: x, y: y, action: action});
     connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     drawFromServer(x, y, action);
 }
 
+/**
+ * draws at x,y coordinates on the server
+ * @param x
+ * @param y
+ * @param action
+ */
 //Allows to draw on the Server
 function drawFromServer(x, y, action){
     if (action === "start"){
