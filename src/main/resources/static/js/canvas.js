@@ -32,8 +32,8 @@ const colors = Object.freeze({
     BLACK: "black",
     DARKGREY: "#707b7c",
     LIGHTGREY: "#bfc9ca",
-    RED: "red",
-    GREEN: "green",
+    RED: "#FF1010",
+    GREEN: "#317140",
     BLUE: "blue",
     YELLOW: "yellow",
     PURPLE: "rebeccapurple",
@@ -43,24 +43,23 @@ const colors = Object.freeze({
     TEAL: "#58d68d",
 
     // 12 secondary colors (faded colors??)
-    BROWN1: "brown",
-    BROWN2: "brown",
-    BROWN3: "aqua",
-    BROWN4: "brown",
-    BROWN5: "brown",
-    BROWN6: "brown",
-    BROWN7: "brown",
-    BROWN8: "brown",
-    BROWN9: "brown",
-    BROWN10: "brown",
-    BROWN11: "brown",
-    BROWN12: "brown",
-
+    LIGHTBLUE: "#9FBCF8",
+    LIGHTGREEN: "#A3F9A0",
+    LIGHTYELLOW: "#E5F474",
+    BROWN: "#694310",
+    LIGHTBROWN: "#A57638",
+    LIGHTRED: "#F25151",
+    NAVY: "#04236B",
+    LIGHTPURPLE: "#B76EEF",
+    OFFRED: "#A12525",
     // Dev colors
     JAXEN_ORANGE: '#F39C12',
-    MERLYN_RED: '#FF1010',
+    //MERLYN_RED: 'regular red color',
     OWEN_PURPLE: '#642D96',
-    ZACH_LIME: '#41FF07'
+    ZACH_LIME: '#12E90B'
+
+
+
 });
 let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
