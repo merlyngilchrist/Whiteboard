@@ -65,8 +65,8 @@ window.onload = function() {
 };
 
 /**
- *
- * @param code
+ * sets the text to the session code
+ * @param code session code
  */
 function setSessionCodeText(code) {
     const textContainer = document.getElementById("sessionCodeContainer");
@@ -288,6 +288,9 @@ if (canvas.getContext) {
         penSizeText.innerHTML = `${penSize}` + "px";
     }
 
+    /**
+     * checks undo
+     */
     function checkUndoRedoButtons() {
         if (undoStack.length === 0) {
             showUndoButton(false);
@@ -590,11 +593,21 @@ function displayColorOptions(display) {
     }
 }
 
+/**
+ * hides element by id.
+ * @param id id of element.
+ * @param hide 'true' or 'false' if object should be hidden.
+ */
 function hideElementByID(id, hide) {
     const element = document.getElementById(id);
     hideElementByHTMLObject(element, hide);
 }
 
+/**
+ * hides element by object.
+ * @param object object element.
+ * @param hide 'true' or 'false' if object should be hidden.
+ */
 function hideElementByHTMLObject(object, hide) {
     if (hide) {
         object.style.display = "none";
@@ -603,6 +616,10 @@ function hideElementByHTMLObject(object, hide) {
     }
 }
 
+/**
+ * shows or hides redo button.
+ * @param show 'true' or 'false' if object should be hidden.
+ */
 function showRedoButton(show) {
     if (show) {
         hideElementByID("redoButton",false);
@@ -612,7 +629,10 @@ function showRedoButton(show) {
         document.getElementById("undoButton").style.borderTopRightRadius = '30%';
     }
 }
-
+/**
+ * shows or hides undo button.
+ * @param show 'true' or 'false' if object should be hidden.
+ */
 function showUndoButton(show) {
     if (show) {
         hideElementByID("undoButton",false);
