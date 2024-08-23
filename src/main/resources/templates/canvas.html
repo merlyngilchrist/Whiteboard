@@ -73,14 +73,14 @@
         <div class="menuItem" id="colorMenuButton" onclick="displayColorOptions('true')">
             <div id="currentColorCircle"></div>
         </div>
-        <div id="colorButtonsContainer">
+        <div id="colorButtonsContainer" class="disabled">
             <button type="button" onclick="setColorSetInMenu(0)" class="unselectedTool" id="colorMenuSetOne">
                 <label>Basic</label>
             </button>
             <button type="button" onclick="setColorSetInMenu(1)" class="unselectedTool" id="colorMenuSetTwo">
                 <label>Faded</label>
             </button>
-            <div id="colorSet1">
+            <div id="colorSet">
                 <div class="colorSelectRow1">
                     <div class="menuItem colorSelectCol1">
                         <div class="colorCircle" onclick="colorButtonPressed(this)"></div>

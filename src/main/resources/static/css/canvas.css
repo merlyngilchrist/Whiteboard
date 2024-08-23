@@ -189,6 +189,11 @@ button img {
     user-select: none;
 }
 
+.selectedButton {
+    background-color: #333333 !important;
+    color: white;
+}
+
 #colorButtonsContainer #colorMenuSetTwo {
     left: auto;
     right: 3.5%;
@@ -282,9 +287,7 @@ button img {
 
 
 .disabled {
-    opacity: 0;
-    pointer-events: none;
-    user-select: none;
+    display: none !important;
 }
 
 .unselectedTool {

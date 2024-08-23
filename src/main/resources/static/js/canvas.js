@@ -70,7 +70,6 @@ let redoStack = [];
  */
 window.onload = function() {
     setColorSetInMenu(0);
-    displayColorOptions('false');
     changeColor(currentColor);
     testConnection();
     setSessionCodeText("42069");
@@ -246,7 +245,6 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
         }
-        enableCursorCircle();
 
         // sendDrawing(event, "draw");
     }
@@ -555,10 +553,10 @@ function setColorSetInMenu(set) {
     let colorNum = set * 12;
     const keys = Object.keys(colors);
 
-    let colorSet1 = document.getElementById("colorSet1");
-    for (let r = 0; r < colorSet1.children.length; r++) { //Each row of colorSet1
+    let colorSet = document.getElementById("colorSet");
+    for (let r = 0; r < colorSet.children.length; r++) { //Each row of colorSet1
 
-        let row = colorSet1.children.item(r);
+        let row = colorSet.children.item(r);
 
         for (let m = 0; m < row.children.length; m++, colorNum++) { //Each menuItem in row, adds to colorNum each time
             let colorCircle = row.children.item(m).children.item(0);
@@ -569,6 +567,24 @@ function setColorSetInMenu(set) {
         }
 
     }
+
+    let changeColorSetButton1 = document.getElementById("colorMenuSetOne")
+    let changeColorSetButton2 = document.getElementById("colorMenuSetTwo")
+
+    if (set === 0) {
+        changeColorSetButton1.classList.add("selectedButton");
+        changeColorSetButton2.classList.remove("selectedButton");
+
+        changeColorSetButton1.classList.remove("unselectedTool");
+        changeColorSetButton2.classList.add("unselectedTool");
+    } else {
+        changeColorSetButton1.classList.remove("selectedButton");
+        changeColorSetButton2.classList.add("selectedButton");
+
+        changeColorSetButton1.classList.add("unselectedTool");
+        changeColorSetButton2.classList.remove("unselectedTool");
+    }
+
     selectColorOption(currentColor);
 }
 
@@ -581,7 +597,8 @@ function displayColorOptions(display) {
     const currentColorButton = document.getElementById("currentColorCircle").parentElement;
     let colorSelectIsShown;
     if (display.localeCompare("true") === 0) { //Display color select elements
-        colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0)
+        colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0);
+        if (colorContainer.classList.contains("disabled")) colorSelectIsShown = false;
         if (colorSelectIsShown) {
             hideElementByHTMLObject(colorContainer, true);
         } else {
@@ -618,6 +635,7 @@ function hideElementByHTMLObject(object, hide) {
         object.style.display = "none";
     } else {
         object.style.display = "";
+        object.classList.remove("disabled");
     }
 }
 
