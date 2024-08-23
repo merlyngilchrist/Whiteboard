@@ -47,11 +47,11 @@ const colors = Object.freeze({
     LIGHTGREEN: "#A3F9A0",
     LIGHTYELLOW: "#E5F474",
     BROWN: "#694310",
-    LIGHTBROWN: "#A57638",
-    LIGHTRED: "#F25151",
+    LIGHT_BROWN: "#A57638",
+    LIGHT_RED: "#F25151",
     NAVY: "#04236B",
-    LIGHTPURPLE: "#B76EEF",
-    OFFRED: "#A12525",
+    LIGHT_PURPLE: "#B76EEF",
+    OFF_RED: "#A12525",
 
     // Dev colors
     JAXEN_ORANGE: '#F39C12',
@@ -100,9 +100,6 @@ function testConnection(){
         });
 }
 
-
-
-
 //SignalR connection
 // const connection = new signalR.HubConnectionBuilder()
 //     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
@@ -117,7 +114,6 @@ function testConnection(){
 // connection.start().then(() => {
 //     joinSession();
 // }).catch(err => console.error(err));
-
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -134,8 +130,8 @@ if (canvas.getContext) {
     canvas.addEventListener('mousemove', moveCursorCircle); // Cursor circle
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mousemove', drawPen);
     canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
@@ -233,7 +229,7 @@ if (canvas.getContext) {
      * Draws on the screen, but only when drawing is set to 'true'
      * @param event = 'mousemove' event listener
      */
-    function draw(event) {
+    function drawPen(event) {
         if (!drawing) return;
 
         const x = event.clientX - rect.left;
