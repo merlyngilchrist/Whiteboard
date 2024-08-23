@@ -52,6 +52,7 @@ const colors = Object.freeze({
     NAVY: "#04236B",
     LIGHTPURPLE: "#B76EEF",
     OFFRED: "#A12525",
+
     // Dev colors
     JAXEN_ORANGE: '#F39C12',
     //MERLYN_RED: 'regular red color',
@@ -133,6 +134,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mousemove', moveCursorCircle); // Cursor circle
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
