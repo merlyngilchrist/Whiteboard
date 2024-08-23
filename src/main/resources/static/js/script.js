@@ -1,18 +1,9 @@
 src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"
-const canvas = document.getElementById('whiteboard');
-const ctx = canvas.getContext('2d');
-let drawing = false;
 let sessionId = null;
-let debounceTimeout;
-
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
     .build();
-
-connection.on("ReceiveDrawing", (x, y, action) => {
-    drawFromServer(x, y, action);
-});
 
 connection.start().then(() => {
     joinSession();
@@ -87,5 +78,3 @@ function displayJoinUIContainer(display) {
     }
 
 }
-
-
