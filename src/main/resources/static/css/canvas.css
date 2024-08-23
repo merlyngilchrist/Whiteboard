@@ -176,7 +176,27 @@ button img {
 
 
 /* Color selection */
-#colorButtonsContainer {
+#colorButtonsContainer #colorMenuSetTwo, #colorButtonsContainer #colorMenuSetOne {
+    padding-bottom: 11px;
+    top: 28.2%;
+    height: 35px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+#colorButtonsContainer #colorMenuSetTwo label, #colorButtonsContainer #colorMenuSetOne label {
+    pointer-events: none;
+    user-select: none;
+}
+
+#colorButtonsContainer #colorMenuSetTwo {
+    left: auto;
+    right: 3.5%;
+}
+
+#colorButtonsContainer #colorMenuSetOne {
+    left: auto;
+    right: 9%;
 
 }
 

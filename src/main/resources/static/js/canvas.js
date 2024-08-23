@@ -42,6 +42,19 @@ const colors = Object.freeze({
     CYAN: "cyan",
     TEAL: "#58d68d",
 
+    // 12 secondary colors (faded colors??)
+    BROWN1: "brown",
+    BROWN2: "brown",
+    BROWN3: "aqua",
+    BROWN4: "brown",
+    BROWN5: "brown",
+    BROWN6: "brown",
+    BROWN7: "brown",
+    BROWN8: "brown",
+    BROWN9: "brown",
+    BROWN10: "brown",
+    BROWN11: "brown",
+    BROWN12: "brown",
 
     // Dev colors
     JAXEN_ORANGE: '#F39C12',
@@ -54,10 +67,11 @@ let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
 
+
 window.onload = function() {
-    changeColor(currentColor);
-    createColorDisplaysInColorCircles();
+    setColorSetInMenu(0);
     displayColorOptions('false');
+    changeColor(currentColor);
     testConnection();
     setSessionCodeText("42069");
 };
@@ -222,7 +236,6 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
         }
-        enableCursorCircle();
 
         // sendDrawing(event, "draw");
     }
@@ -233,6 +246,10 @@ if (canvas.getContext) {
         connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
+    /**
+     * Change the currentColor to this button's id
+     * @param button The button object using "this", ID of button should be color to be changed to
+     */
     function colorButtonPressed(button) {
         let color = button.id; // "magenta"
         changeColor(color);
@@ -431,8 +448,8 @@ function selectButton(buttonID) {
 
     // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
     let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
-    hideElementByID("penSizeMenu", !currentToolIsFillOrColorPicker);
-    hideElementByID("cursorCircle", !currentToolIsFillOrColorPicker);
+    hideElementByID("penSizeMenu", currentToolIsFillOrColorPicker);
+    hideElementByID("cursorCircle", currentToolIsFillOrColorPicker);
 
 }
 
@@ -469,8 +486,8 @@ function moveCursorCircle(event) {
     cursorCircle.style.top = `${y}px`;
 }
 
-function createColorDisplaysInColorCircles() {
-    let colorNum = 0;
+function setColorSetInMenu(set) {
+    let colorNum = set * 12;
     const keys = Object.keys(colors);
 
     let colorSet1 = document.getElementById("colorSet1");
@@ -487,6 +504,7 @@ function createColorDisplaysInColorCircles() {
         }
 
     }
+    selectColorOption(currentColor);
 }
 
 /**
