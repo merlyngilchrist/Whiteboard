@@ -4,21 +4,46 @@
         <title>Pen Together</title>
         <link rel="stylesheet" href="/css/style.css">
         <link rel="icon" href="/images/PenTogetherLogo.png" type="image/jpg">
+        <script src="/js/script.js" defer></script>
     </head>
     <body>
     <header>
-            <h1 class="header-title">Pen Together</h1>
+        <h1 class="header-title">Pen Together</h1>
     </header>
-        <div class="container">
-            <img src="/images/PenTogetherLogo.png" alt="Pen Together Logo" class="logo">
-            <div class="option">
-                <form action="/canvas" method="post">
-                    <button class="btn">Host Session</button>
-                </form>
-            </div>
-            <div class="option">
-                <button class="btn">Join Session</button>
-            </div>
+
+    <video autoplay muted loop id="backgroundVideo">
+        <source src="/static/videos/PenTogetherHomeVideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <img src="/images/PenTogetherLogo.png" alt="Pen Together Logo" class="logo">
+        <div class="option">
+            <form action="/canvas" method="post">
+                <button class="btn">Host Session</button>
+            </form>
         </div>
+        <div class="option">
+            <button class="btn" onclick="displayJoinUIContainer(true)">Join Session</button>
+        </div>
+    </div>
+
+
+    <div id="joinUIContainer" class="hidden">
+        <div id="backgroundOverlay" onclick="displayJoinUIContainer(false)"></div>
+        <div id="joinUIMenu">
+            <h1>Enter session code</h1>
+            <label>
+                <input type="text">
+            </label>
+            <br>
+            <label>
+                <button class="btn" onclick="joinSession()">
+                    Join
+                </button>
+            </label>
+
+        </div>
+    </div>
     </body>
 </html>

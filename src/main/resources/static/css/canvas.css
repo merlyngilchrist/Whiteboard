@@ -38,6 +38,14 @@ button, .menuItem {
     height: 6%;
 }
 
+#leftBarButtons button, #undoButton, #redoButton{
+    max-width: fit-content;
+}
+
+#leftBarButtons button:not(.selectedTool):hover, #redoButton:hover, #undoButton:hover {
+    background-color: #EEE;
+}
+
 .menuItem {
     background-color: white;
     left: auto;
@@ -152,6 +160,20 @@ button img {
     filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
 }
 
+#sessionCodeContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    padding: 3px 5px;
+    min-width: 155px;
+    border-bottom-right-radius: 30px;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
 
 /* Color selection */
 #colorButtonsContainer {
@@ -250,13 +272,13 @@ button img {
 }
 
 #cursorCircle {
+    display: block;
     position: absolute;
     width: 5px;
     height: 5px;
     border: 1px dashed grey;
     border-radius: 50%;
     pointer-events: none;
-    display: none;
     z-index: 10;
 }
 

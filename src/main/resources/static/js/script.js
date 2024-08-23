@@ -5,6 +5,7 @@ let drawing = false;
 let sessionId = null;
 let debounceTimeout;
 
+
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
     .build();
@@ -75,6 +76,16 @@ function drawFromServer(x, y, action){
     }else if (action === "end"){
         ctx.closePath();
     }
+}
+
+
+function displayJoinUIContainer(display) {
+    if (display) {
+        document.getElementById('joinUIContainer').classList.add('active');
+    } else {
+        document.getElementById('joinUIContainer').classList.remove('active');
+    }
+
 }
 
 

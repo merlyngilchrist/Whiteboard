@@ -5,44 +5,46 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pen Together</title>
         <link rel="stylesheet" href="/css/canvas.css">
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js" defer></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js" defer></script>
         <script src="/js/canvas.js" defer></script>
         <link rel="icon" href="/images/PenTogetherLogo.png" type="image/jpg">
     </head>
     <body>
         <canvas id="whiteboard" alt="Drawing canvas" class="fullscreen"></canvas>
-        <!-- Pen button -->
-        <button type="button" onclick="selectPenTool()" class="selectedTool" id="penButton">
-            <img src="/images/pen.png" alt="Pen Tool">
-        </button>
-        <!-- Eraser button -->
-        <button type="button" onclick="selectEraserTool()" class="unselectedTool" id="eraserButton">
-            <img src="/images/eraser.png" alt="Eraser tool">
-        </button>
-        <!-- Circle button -->
-        <button type="button" onclick="selectShapeTool('circle')" class="unselectedTool" id="circleButton">
-            <img src="/images/circle.png" alt="Circle Tool">
-        </button>
-        <!-- Square button -->
-        <button type="button" onclick="selectShapeTool('square')" class="unselectedTool" id="squareButton">
-            <img src="/images/square.png" alt="Square Tool">
-        </button>
-        <!-- Triangle button -->
-        <button type="button" onclick="selectShapeTool('triangle')" class="unselectedTool" id="triangleButton">
-            <img src="/images/triangle.png" alt="Triangle Tool">
-        </button>
-        <!-- Fill button -->
-        <button type="button" onclick="selectFillTool()" class="unselectedTool" id="fillButton">
-            <img src="/images/paint-bucket.png" alt="Fill tool">
-        </button>
-        <!-- Color Picker button -->
-        <button type="button" onclick="selectColorPicker()" class="unselectedTool" id="colorPickerButton">
-            <img src="/images/dropper.png" alt="Color picker tool">
-        </button>
-        <!-- Text button -->
-        <button type="button" onclick="selectTextTool()" class="unselectedTool" id="textButton">
-            <img src="/images/letter-t-.png" alt="Text tool">
-        </button>
+        <div id="leftBarButtons">
+            <!-- Pen button -->
+            <button type="button" onclick="selectPenTool()" class="selectedTool" id="penButton">
+                <img src="/images/pen.png" alt="Pen Tool">
+            </button>
+            <!-- Eraser button -->
+            <button type="button" onclick="selectEraserTool()" class="unselectedTool" id="eraserButton">
+                <img src="/images/eraser.png" alt="Eraser tool">
+            </button>
+            <!-- Circle button -->
+            <button type="button" onclick="selectShapeTool('circle')" class="unselectedTool" id="circleButton">
+                <img src="/images/circle.png" alt="Circle Tool">
+            </button>
+            <!-- Square button -->
+            <button type="button" onclick="selectShapeTool('square')" class="unselectedTool" id="squareButton">
+                <img src="/images/square.png" alt="Square Tool">
+            </button>
+            <!-- Triangle button -->
+            <button type="button" onclick="selectShapeTool('triangle')" class="unselectedTool" id="triangleButton">
+                <img src="/images/triangle.png" alt="Triangle Tool">
+            </button>
+            <!-- Fill button -->
+            <button type="button" onclick="selectFillTool()" class="unselectedTool" id="fillButton">
+                <img src="/images/paint-bucket.png" alt="Fill tool">
+            </button>
+            <!-- Text button -->
+            <button type="button" onclick="selectTextTool()" class="unselectedTool" id="textButton">
+                <img src="/images/letter-t-.png" alt="Text tool">
+            </button>
+            <!-- Color Picker button -->
+            <button type="button" onclick="selectColorPicker()" class="unselectedTool" id="colorPickerButton">
+                <img src="/images/dropper.png" alt="Color picker tool">
+            </button>
+        </div>
         <!-- Undo button -->
         <button type="button" onclick="undoButton()" class="unselectedTool" id="undoButton">
             <img src="/images/undo.png" alt="Undo">
@@ -52,17 +54,19 @@
             <img src="/images/redo.png" alt="Redo">
         </button>
 
-        <!-- Increase Pen Size button -->
-        <button type="button" onclick="increasePenSizeButton()" class="unselectedTool" id="increasePenSizeButton">
-            <img src="/images/plus.png" alt="Increase pen size">
-        </button>
-        <!-- Decrease Pen Size button -->
-        <button type="button" onclick="decreasePenSizeButton()" class="unselectedTool" id="decreasePenSizeButton">
-            <img src="/images/minus.png" alt="Decrease pen size">
-        </button>
-        <!-- Pen size text -->
-        <div class="menuItem" id="penSizeItem">
-            <p id="penSizeText">5px</p>
+        <div id="penSizeMenu">
+            <!-- Increase Pen Size button -->
+            <button type="button" onclick="increasePenSizeButton()" class="unselectedTool" id="increasePenSizeButton">
+                <img src="/images/plus.png" alt="Increase pen size">
+            </button>
+            <!-- Decrease Pen Size button -->
+            <button type="button" onclick="decreasePenSizeButton()" class="unselectedTool" id="decreasePenSizeButton">
+                <img src="/images/minus.png" alt="Decrease pen size">
+            </button>
+            <!-- Pen size text -->
+            <div class="menuItem" id="penSizeItem">
+                <p id="penSizeText">5px</p>
+            </div>
         </div>
 
         <!-- Color buttons -->
@@ -118,6 +122,13 @@
             </div>
         </div>
 
+        <!-- Session code display text -->
+        <div class="menuItem" id="sessionCodeContainer">
+            <p>Session code:</p>
+        </div>
+
+        <!-- Color picker preview -->
+        <div id="colorPickerPreview" class="colorCircle"></div>
 
         <!-- Cursor -->
         <div id="cursorCircle"></div>

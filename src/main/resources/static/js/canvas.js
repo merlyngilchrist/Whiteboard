@@ -3,6 +3,7 @@ const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
+let lastX, lastY;
 let penSize = 10;
 let buttons = [
     "penButton",
@@ -23,7 +24,8 @@ const toolTypes = Object.freeze({
     CIRCLE: 3,
     SQUARE: 4,
     TRIANGLE: 5,
-    TEXT: 6
+    TEXT: 6,
+    COLOR_PICKER: 7
 });
 const colors = Object.freeze({
     // 12 Main colors
@@ -59,7 +61,17 @@ window.onload = function() {
     createColorDisplaysInColorCircles();
     displayColorOptions('false');
     testConnection();
+    setSessionCodeText("42069");
 };
+
+/**
+ *
+ * @param code
+ */
+function setSessionCodeText(code) {
+    const textContainer = document.getElementById("sessionCodeContainer");
+    textContainer.innerHTML = "Session code: " + code;
+}
 
 // JavaScript test connection with Java
 /**
@@ -97,7 +109,7 @@ function testConnection(){
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
-    // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas - Owen
     const devicePixelRatio = window.devicePixelRatio;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * devicePixelRatio;
@@ -107,6 +119,7 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
+    canvas.addEventListener('mousemove', moveCursorCircle); // Cursor circle
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', draw);
@@ -175,16 +188,20 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
-    enableCursorCircle();
     selectCursor("penButton");
+    checkUndoRedoButtons();
 
     /**
-     * starts drawing on the canvas, saves the canvas.
-     * @param event event from event listener.
+     * Begins a path when clicked
+     * @param event = the 'mousedown' event listener
      */
     function startDrawing(event) {
         drawing = true;
-        draw(event);
+        context.beginPath();
+        // The idea to use lastX and lastY in order to fix the undo/redo leaving a singular dot behind was not mine and came from ChatGPT - Owen
+        lastX = event.clientX - rect.left;
+        lastY = event.clientY - rect.top;
+        context.moveTo(lastX, lastY);
         saveCanvas();
         // sendDrawing(event, "start");
     }
@@ -194,13 +211,14 @@ if (canvas.getContext) {
      */
     function stopDrawing() {
         drawing = false;
-        context.beginPath();
+        lastX = null;
+        lastY = null;
         // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
 
     /**
-     * draws at mouse position while drawing.
-     * @param event event from event listener.
+     * Draws on the screen, but only when drawing is set to 'true'
+     * @param event = 'mousemove' event listener
      */
     function draw(event) {
         if (!drawing) return;
@@ -208,10 +226,14 @@ if (canvas.getContext) {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        context.lineTo(x,y);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(x,y);
+        if (x !== lastX || y !== lastY) {
+            context.lineTo(x, y);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(x, y);
+            lastX = x;
+            lastY = y;
+        }
         enableCursorCircle();
 
         // sendDrawing(event, "draw");
@@ -234,21 +256,19 @@ if (canvas.getContext) {
      */
     function colorButtonPressed(button) {
         let color = button.id; // "magenta"
-
         changeColor(color);
     }
 
-    // Change color based on parameter
     /**
-     * sets the color, also calls selectColorOption, and updateCurrentColorCircle.
-     * @param color color to be changed to.
+     * This changes the color of the pen to whatever is passed in as a parameter.
+     * @param color = any item from the colors enum or any Hex/RGB value
      */
     function changeColor(color) {
         if (currentTool !== toolTypes.ERASER) {
             currentColor = color;
         }
         context.strokeStyle = color;
-        selectColorOption();
+        selectColorOption(color);
         updateCurrentColorCircle();
     }
 
@@ -268,6 +288,20 @@ if (canvas.getContext) {
         penSizeText.innerHTML = `${penSize}` + "px";
     }
 
+    function checkUndoRedoButtons() {
+        if (undoStack.length === 0) {
+            showUndoButton(false);
+        } else {
+            showUndoButton(true);
+        }
+
+        if (redoStack.length === 0) {
+            showRedoButton(false);
+        } else {
+            showRedoButton(true);
+        }
+    }
+
     /**
      * redoes an undo and displays it on the screen,
      * puts redo data into undo stack, removes it from redo stack.
@@ -278,6 +312,7 @@ if (canvas.getContext) {
             let nextState = redoStack.pop();
             context.putImageData(nextState,0,0);
         }
+        checkUndoRedoButtons();
     }
 
     /**
@@ -290,6 +325,7 @@ if (canvas.getContext) {
             let previousState = undoStack.pop();
             context.putImageData(previousState,0,0);
         }
+        checkUndoRedoButtons();
     }
 
     /**
@@ -298,8 +334,8 @@ if (canvas.getContext) {
     function saveCanvas() {
         redoStack = [];
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
+        checkUndoRedoButtons();
     }
-
 }
 
 /**
@@ -368,6 +404,7 @@ function redoButton() {
  * calls selectButton and selectCursor.
  */
 function selectColorPicker() {
+    currentTool = toolTypes.COLOR_PICKER;
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
@@ -446,11 +483,17 @@ function selectButton(buttonID) {
     selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
+
     if (currentTool === toolTypes.ERASER) {
         displayColorOptions('hide');
     } else {
         displayColorOptions('false');
     }
+
+    // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
+    let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
+    hideElementByID("penSizeMenu", !currentToolIsFillOrColorPicker);
+    hideElementByID("cursorCircle", !currentToolIsFillOrColorPicker);
 
 }
 
@@ -519,17 +562,6 @@ function createColorDisplaysInColorCircles() {
         }
 
     }
-
-    /*
-    document.querySelectorAll('.colorCircle').forEach(circle => {
-        if (circle.parentElement.id.localeCompare("colorMenuButton") === 0 ) { //Menu button
-            circle.style.backgroundColor = currentColor;
-        } else {
-            circle.style.backgroundColor = circle.getAttribute('data-color');
-        }
-    });
-
-     */
 }
 
 /**
@@ -543,16 +575,50 @@ function displayColorOptions(display) {
     if (display.localeCompare("true") === 0) { //Display color select elements
         colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0)
         if (colorSelectIsShown) {
-            colorContainer.style.display = "none";
+            hideElementByHTMLObject(colorContainer, true);
         } else {
-            colorContainer.style.display = "";
+            hideElementByHTMLObject(colorContainer, false);
         }
-        currentColorButton.style.display = "";
+        hideElementByHTMLObject(currentColorButton, false);
     } else if (display.localeCompare("hide") === 0) { //Hide all color stuff
-        colorContainer.style.display = "none";
-        currentColorButton.style.display = "none";
+        hideElementByHTMLObject(colorContainer, true);
+        hideElementByHTMLObject(currentColorButton, true);
+
     } else if (display.localeCompare("false") === 0) { //Don't display select menu but display current color button
-        colorContainer.style.display = "none";
-        currentColorButton.style.display = "";
+        hideElementByHTMLObject(colorContainer, true);
+        hideElementByHTMLObject(currentColorButton, false);
+    }
+}
+
+function hideElementByID(id, hide) {
+    const element = document.getElementById(id);
+    hideElementByHTMLObject(element, hide);
+}
+
+function hideElementByHTMLObject(object, hide) {
+    if (hide) {
+        object.style.display = "none";
+    } else {
+        object.style.display = "";
+    }
+}
+
+function showRedoButton(show) {
+    if (show) {
+        hideElementByID("redoButton",false);
+        document.getElementById("undoButton").style.borderTopRightRadius = '0%';
+    } else {
+        hideElementByID("redoButton",true);
+        document.getElementById("undoButton").style.borderTopRightRadius = '30%';
+    }
+}
+
+function showUndoButton(show) {
+    if (show) {
+        hideElementByID("undoButton",false);
+        document.getElementById("redoButton").style.borderTopLeftRadius = '0%';
+    } else {
+        hideElementByID("undoButton",true);
+        document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
     }
 }
