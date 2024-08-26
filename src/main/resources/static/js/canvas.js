@@ -1,7 +1,6 @@
 const canvas = document.getElementById("whiteboard");
 const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
-// import * as signalR from "@microsoft/signalr";
 
 let lastX, lastY;
 let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
@@ -34,7 +33,7 @@ const colors = Object.freeze({
     BLACK: "black",
     DARKGREY: "#707b7c",
     LIGHTGREY: "#bfc9ca",
-    RED: "#FF1010",
+    RED: "#FF0000",
     GREEN: "#317140",
     BLUE: "blue",
     YELLOW: "yellow",
@@ -55,7 +54,7 @@ const colors = Object.freeze({
     LIGHT_PURPLE: "#B76EEF",
     OFF_RED: "#A7171A",
     // Dev colors
-    JAXEN_ORANGE: '#edc453',
+    JAXEN_ORANGE: '#EDC453',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#12E90B'
 
@@ -184,6 +183,8 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, canvas.width, canvas.height);
     selectCursor("penButton");
     checkUndoRedoButtons();
 
@@ -395,6 +396,16 @@ if (canvas.getContext) {
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
         checkUndoRedoButtons();
     }
+
+    function saveCanvasToLocal() {
+        const dataURL = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = 'canvas-image.png';
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
 
 /**
@@ -435,6 +446,7 @@ function selectPenTool() {
     selectButton("penButton");
     selectCursor("penButton");
 }
+
 /**
  * sets current tool to eraser, sets color to white, calls selectButton, and selectCursor.
  */
@@ -467,6 +479,7 @@ function selectColorPicker() {
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
+
 /**
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
@@ -475,13 +488,13 @@ function selectFillTool() {
     selectButton("fillButton");
     selectCursor("fillButton");
 }
+
 /**
  * sets current tool to text, calls selectButton, and selectCursor.
  */
 function selectTextTool() {
     setTool(toolTypes.TEXT)
     selectButton("textButton");
-    //selectCursor("fillButton")
 }
 
 /**
@@ -496,6 +509,10 @@ function increasePenSizeButton() {
  */
 function decreasePenSizeButton() {
     changeSize(--penSize);
+}
+
+function saveButton() {
+    saveCanvasToLocal();
 }
 
 /**
