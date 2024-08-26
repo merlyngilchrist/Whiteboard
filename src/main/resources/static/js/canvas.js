@@ -1,7 +1,6 @@
 const canvas = document.getElementById("whiteboard");
 const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
-// import * as signalR from "@microsoft/signalr";
 
 let lastX, lastY;
 let penSize = 10;
@@ -66,6 +65,7 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
+
 /**
  * initializes basic settings when browser loads.
  */
@@ -100,21 +100,6 @@ function testConnection(){
         });
 }
 
-//SignalR connection
-// const connection = new signalR.HubConnectionBuilder()
-//     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
-//     .build();
-
-//Turn connection on
-// connection.on("ReceiveDrawing", (x, y, action) => {
-//     drawFromServer(x, y, action);
-// });
-
-//Starts connection
-// connection.start().then(() => {
-//     joinSession();
-// }).catch(err => console.error(err));
-
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
     // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas - Owen
@@ -132,7 +117,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', drawPen);
     canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
+    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked - Owen
         event.preventDefault()
         if (event.deltaY < 0){
             changeSize(++penSize);
@@ -212,7 +197,6 @@ if (canvas.getContext) {
         lastY = event.clientY - rect.top;
         context.moveTo(lastX, lastY);
         saveCanvas();
-        // sendDrawing(event, "start");
     }
 
     /**
@@ -222,7 +206,6 @@ if (canvas.getContext) {
         drawing = false;
         lastX = null;
         lastY = null;
-        // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
 
     /**
@@ -231,6 +214,7 @@ if (canvas.getContext) {
      */
     function drawPen(event) {
         if (!drawing) return;
+        if (currentTool !== toolTypes.PEN || currentTool !== toolTypes.ERASER) return;
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -243,19 +227,6 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
         }
-
-        // sendDrawing(event, "draw");
-    }
-
-    /**
-     * sends drawings to signalR.
-     * @param event event from event listener.
-     * @param action action being sent.
-     */
-    function sendDrawing(event, action){
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
     /**
@@ -387,6 +358,7 @@ function selectPenTool() {
     selectButton("penButton");
     selectCursor("penButton");
 }
+
 /**
  * sets current tool to eraser, sets color to white, calls selectButton, and selectCursor.
  */
@@ -419,6 +391,7 @@ function selectColorPicker() {
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
+
 /**
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
@@ -427,13 +400,13 @@ function selectFillTool() {
     selectButton("fillButton");
     selectCursor("fillButton");
 }
+
 /**
  * sets current tool to text, calls selectButton, and selectCursor.
  */
 function selectTextTool() {
     currentTool = toolTypes.TEXT;
     selectButton("textButton");
-    //selectCursor("fillButton")
 }
 
 /**
@@ -650,6 +623,7 @@ function showRedoButton(show) {
         document.getElementById("undoButton").style.borderTopRightRadius = '30%';
     }
 }
+
 /**
  * shows or hides undo button.
  * @param show 'true' or 'false' if object should be hidden.
