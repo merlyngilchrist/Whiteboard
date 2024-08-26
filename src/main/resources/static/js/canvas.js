@@ -32,7 +32,7 @@ const colors = Object.freeze({
     BLACK: "black",
     DARKGREY: "#707b7c",
     LIGHTGREY: "#bfc9ca",
-    RED: "#FF1010",
+    RED: "#FF0000",
     GREEN: "#317140",
     BLUE: "blue",
     YELLOW: "yellow",
@@ -43,9 +43,9 @@ const colors = Object.freeze({
     TEAL: "#58d68d",
 
     // 12 secondary colors (faded colors??)
-    LIGHTBLUE: "#9FBCF8",
-    LIGHTGREEN: "#A3F9A0",
-    LIGHTYELLOW: "#E5F474",
+    LIGHT_BLUE: "#9FBCF8",
+    LIGHT_GREEN: "#A3F9A0",
+    LIGHT_YELLOW: "#E5F474",
     BROWN: "#694310",
     LIGHT_BROWN: "#A57638",
     LIGHT_RED: "#F25151",
@@ -501,7 +501,7 @@ function selectButton(buttonID) {
         displayColorOptions('false');
     }
 
-    // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
+    // Hide penSizeMenu and cursorCircle with the use of the color picker or fill
     let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
     hideElementByID("penSizeMenu", currentToolIsFillOrColorPicker);
     hideElementByID("cursorCircle", currentToolIsFillOrColorPicker);
