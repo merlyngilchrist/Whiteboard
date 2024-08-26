@@ -51,7 +51,7 @@ const colors = Object.freeze({
     LIGHT_RED: "#F25151",
     NAVY: "#04236B",
     LIGHT_PURPLE: "#B76EEF",
-    OFF_RED: "#A12525",
+    OFF_RED: "#A7171A",
 
     // Dev colors
     JAXEN_ORANGE: '#F39C12',
