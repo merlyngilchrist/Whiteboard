@@ -20,37 +20,16 @@ spring:
         format_sql: true
 
   websocket:
+    enabled: true # Enable WebSocket support
     message-broker:
       enabled: true
-    broker:
-      simple:
-        enabled: true # Enable simple broker
-    application-destination-prefixes: /app # Prefix for application destinations
-  level:
-    root: info
+      broker:
+        simple:
+          enabled: true # Enable simple broker
 
-logging:
-  level:
-    root: INFO # Default logging level
-    org.springframework.web: DEBUG # Debug level for Spring Web
-
-managment:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
 
 # Azure-specific configurations (if deploying to Azure)
 azure:
-  application-insights:
-    instrumentation-key: a44311de-dce3-4563-b800-998564890117
-
-  signalr:
-    connection-string: ${Endpoint=https://whiteboard.service.signalr.net;AccessKey=Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=;Version=1.0;} # SignalR connection string (store in environment variables)
-
-    url: "wss://whiteboard.service.signalr.net"
-    access-key: "Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U="
-    hub-name: "whiteboard"
   app:
     service:
       name: ${PenTogether} # App service name (store in environment variables)
@@ -62,12 +41,8 @@ azure:
         container-name: container-name
         sas-token: sas-token
 
-
 management:
   endpoints:
     web:
       exposure:
         include: "*" # Expose all management endpoints
-
-
-

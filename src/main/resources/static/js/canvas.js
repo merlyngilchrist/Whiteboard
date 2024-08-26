@@ -66,7 +66,6 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
-
 /**
  * initializes basic settings when browser loads.
  */
@@ -75,6 +74,26 @@ window.onload = function() {
     changeColor(currentColor);
     testConnection();
     setSessionCodeText("42069");
+};
+
+const sessionId = "default-session-id";
+const socket = new WebSocket(`wss://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net/canvas`);
+
+
+socket.onopen = function (event){
+    console.log("WebSocket is connected.")
+};
+
+socket.onmessage = function (event){
+    let data = JSON.parse(event.data);
+};
+
+socket.onclose = function (event){
+    console.log("Websocket is closed.");
+};
+
+socket.onerror = function (error){
+    console.error("WebSocket Error: ", error);
 };
 
 /**
@@ -100,6 +119,7 @@ function testConnection(){
             console.error("Error connecting to Java: " + error);
         });
 }
+
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -221,19 +241,27 @@ if (canvas.getContext) {
     function drawPen(event) {
         if (!drawing || (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER)) return;
 
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
 
-        if (x !== lastX || y !== lastY) {
-            context.lineTo(x, y);
+        let data = {
+            x: event.clientX,
+            y: event.clientY,
+            color: currentColor,
+            size: penSize
+        };
+
+        // const x = event.clientX - rect.left;
+        // const y = event.clientY - rect.top;
+
+        if (data.x !== lastX || data.y !== lastY) {
+            context.lineTo(data.x, data.y);
             context.stroke();
             context.beginPath();
             context.moveTo(x, y);
-            lastX = x;
-            lastY = y;
+            lastX = data.x;
+            lastY = data.y;
         }
 
-        // sendDrawing(event, "draw");
+        sendDrawing(data);
     }
 
 
@@ -300,11 +328,21 @@ if (canvas.getContext) {
      * @param event event from event listener.
      * @param action action being sent.
      */
-    function sendDrawing(event, action){
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
+    function sendDrawing(data){
+       if (socket.readyState === WebSocket.OPEN){
+           socket.send(JSON.stringify(data));
+       }
     }
+
+    // function updateCanvasWithData(data){
+    //     context.beginPath();
+    //     context.moveTo(lastX, lastY);
+    //     context.lineTo(data.x, data.y);
+    //     context.stroke();
+    //     context.closePath();
+    //     lastX = data.x;
+    //     lastY = data.y;
+    // }
 
     /**
      * gets id of the color button then calls changeColor.
@@ -631,7 +669,6 @@ function setColorSetInMenu(set) {
         changeColorSetButton1.classList.add("unselectedTool");
         changeColorSetButton2.classList.remove("unselectedTool");
     }
-
     selectColorOption(currentColor);
 }
 

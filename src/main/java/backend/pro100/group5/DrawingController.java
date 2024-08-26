@@ -24,7 +24,7 @@ public class DrawingController {
         }catch (Exception e){
             System.err.println("Error forwarding message: " + e.getMessage());
         }
-//        forwardToWebSocketClients(message);
+        forwardToWebSocketClients(message);
     }
 
     private String convertDrawingDataToMessage(DrawingData drawingData){
@@ -32,16 +32,11 @@ public class DrawingController {
     }
 
     private void forwardToSignalR(String message){
-        //Implement the logic to send the message to Azure SignalR Service
-        String url = "Endpoint=https://whiteboard.service.signalr.net/api/v1/hubs/whiteboard/messages";
-        String token = SignalRTokenGenerator.generateAccessToken("https://whiteboard.service.signalr.net", "Ydl/+I+T5Q8PJDW8HN5CIQvHVX43UCjy4j1S6kS3d4U=");
 
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         okhttp3.RequestBody body = okhttp3.RequestBody.create(message, JSON);
         Request request = new Request.Builder()
-                .url(url)
                 .post(body)
-                .addHeader("Authorization", "Bearer " + token)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -53,14 +48,14 @@ public class DrawingController {
         }
     }
 
-//    private void forwardToWebSocketClients(String message){
-//        for (WebSocketSession session : SessionManager.getSessions()){
-//            try {
-//                session.sendMessage(new TextMessage(message));
-//            } catch (IOException e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    private void forwardToWebSocketClients(String message){
+        for (WebSocketSession session : SessionManager.getSessions()){
+            try {
+                session.sendMessage(new TextMessage(message));
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
