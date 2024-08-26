@@ -43,7 +43,7 @@ button, .menuItem {
 }
 
 #leftBarButtons button:not(.selectedTool):hover, #redoButton:hover, #undoButton:hover {
-    background-color: #EEE;
+    background-color: #EEEEEE;
 }
 
 .menuItem {
@@ -174,7 +174,6 @@ button img {
     box-sizing: border-box;
 }
 
-
 /* Color selection */
 #colorButtonsContainer #colorMenuSetTwo, #colorButtonsContainer #colorMenuSetOne {
     padding-bottom: 11px;
@@ -288,8 +287,6 @@ button img {
     border: 3px solid white;
 }
 
-
-
 .disabled {
     display: none !important;
 }
@@ -328,4 +325,14 @@ button img {
 
 .shape-cursor {
     cursor: url("../images/plus.png") 16 16, crosshair;
+}
+
+#saveIcon {
+    scale: 75%;
+}
+
+#saveButton {
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 30%;
 }
