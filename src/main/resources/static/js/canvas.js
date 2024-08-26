@@ -1,9 +1,12 @@
 const canvas = document.getElementById("whiteboard");
 const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
+// import * as signalR from "@microsoft/signalr";
 
 let lastX, lastY;
+let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
 let penSize = 10;
+let fillShape = true;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -31,7 +34,7 @@ const colors = Object.freeze({
     BLACK: "black",
     DARKGREY: "#707b7c",
     LIGHTGREY: "#bfc9ca",
-    RED: "#FF0000",
+    RED: "#FF1010",
     GREEN: "#317140",
     BLUE: "blue",
     YELLOW: "yellow",
@@ -41,7 +44,7 @@ const colors = Object.freeze({
     CYAN: "cyan",
     TEAL: "#58d68d",
 
-    // 12 secondary colors (faded colors??)
+    // 12 secondary colors
     LIGHT_BLUE: "#9FBCF8",
     LIGHT_GREEN: "#A3F9A0",
     LIGHT_YELLOW: "#E5F474",
@@ -51,10 +54,8 @@ const colors = Object.freeze({
     NAVY: "#04236B",
     LIGHT_PURPLE: "#B76EEF",
     OFF_RED: "#A7171A",
-
     // Dev colors
-    JAXEN_ORANGE: '#F39C12',
-    //MERLYN_RED: 'regular red color',
+    JAXEN_ORANGE: '#edc453',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#12E90B'
 
@@ -116,6 +117,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', drawPen);
+    canvas.addEventListener('mousedown', drawShape);
     canvas.addEventListener('mouseleave', stopDrawing);
     canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked - Owen
         event.preventDefault()
@@ -190,6 +192,7 @@ if (canvas.getContext) {
      * @param event = the 'mousedown' event listener
      */
     function startDrawing(event) {
+        if (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER) return;
         drawing = true;
         context.beginPath();
         // The idea to use lastX and lastY in order to fix the undo/redo leaving a singular dot behind was not mine and came from ChatGPT - Owen
@@ -203,9 +206,12 @@ if (canvas.getContext) {
      * stops drawing on the canvas.
      */
     function stopDrawing() {
-        drawing = false;
-        lastX = null;
-        lastY = null;
+        if (currentTool === toolTypes.PEN) {
+            drawing = false;
+            lastX = null;
+            lastY = null;
+            // sendDrawing({clientX: 0, clientY: 0}, "end");
+        }
     }
 
     /**
@@ -213,8 +219,7 @@ if (canvas.getContext) {
      * @param event = 'mousemove' event listener
      */
     function drawPen(event) {
-        if (!drawing) return;
-        if (currentTool !== toolTypes.PEN || currentTool !== toolTypes.ERASER) return;
+        if (!drawing || (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER)) return;
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -227,6 +232,78 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
         }
+
+        // sendDrawing(event, "draw");
+    }
+
+
+    function drawShape(event) {
+        const x = event.clientX - rect.left; // X coordinate of the mouse
+        const y = event.clientY - rect.top;  // Y coordinate of the mouse
+
+        if (clickCount === 0) {
+            lastX = x;
+            lastY = y;
+            clickCount++;
+            return;
+        }
+
+        switch (currentTool) {
+            case toolTypes.CIRCLE:
+                // Calculate the radius as the distance between the starting point and current point
+                const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+
+                context.beginPath();  // Start a new path for the circle
+                context.arc(lastX, lastY, radius, 0, Math.PI * 2); // Draw the circle
+
+                break;
+
+            case toolTypes.SQUARE:
+                context.beginPath();
+                context.moveTo(lastX, lastY); // Start at the first click position
+
+                // Draw the square
+                context.lineTo(x, lastY);
+                context.lineTo(x, y);
+                context.lineTo(lastX, y);
+                context.lineTo(lastX, lastY);
+                context.lineTo(x, lastY);
+
+                break;
+
+            case toolTypes.TRIANGLE:
+                context.beginPath();
+                const triangleTip = lastX - ((lastX - x) / 2);
+
+                context.moveTo(triangleTip, lastY); // Start at the first click position
+                context.lineTo(x, y);
+                context.lineTo(lastX, y);
+                context.lineTo(triangleTip, lastY);
+                context.lineTo(x, y);
+
+                break;
+        }
+
+        if (fillShape) {
+            context.fillStyle = currentColor; // Replace 'currentColor' with your desired color or variable
+            context.fill(); // Fill the circle with the current fill style
+        } else {
+            context.closePath();
+        }
+
+        clickCount = 0; // Reset the click count
+        context.stroke(); // Apply the stroke to draw the shape
+    }
+
+    /**
+     * sends drawings to signalR.
+     * @param event event from event listener.
+     * @param action action being sent.
+     */
+    function sendDrawing(event, action){
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
     /**
@@ -358,7 +435,6 @@ function selectPenTool() {
     selectButton("penButton");
     selectCursor("penButton");
 }
-
 /**
  * sets current tool to eraser, sets color to white, calls selectButton, and selectCursor.
  */
@@ -387,26 +463,25 @@ function redoButton() {
  * calls selectButton and selectCursor.
  */
 function selectColorPicker() {
-    currentTool = toolTypes.COLOR_PICKER;
+    setTool(toolTypes.COLOR_PICKER)
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 }
-
 /**
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
 function selectFillTool() {
-    currentTool = toolTypes.FILL;
+    setTool(toolTypes.FILL)
     selectButton("fillButton");
     selectCursor("fillButton");
 }
-
 /**
  * sets current tool to text, calls selectButton, and selectCursor.
  */
 function selectTextTool() {
-    currentTool = toolTypes.TEXT;
+    setTool(toolTypes.TEXT)
     selectButton("textButton");
+    //selectCursor("fillButton")
 }
 
 /**
@@ -430,17 +505,17 @@ function decreasePenSizeButton() {
 function selectShapeTool(shape) {
     switch (shape) {
         case "circle":
-            currentTool = toolTypes.CIRCLE;
+            setTool(toolTypes.CIRCLE)
             selectButton("circleButton");
             selectCursor("circleButton");
             break;
         case "square":
-            currentTool = toolTypes.SQUARE;
+            setTool(toolTypes.SQUARE)
             selectButton("squareButton");
             selectCursor("squareButton");
             break;
         case "triangle":
-            currentTool = toolTypes.TRIANGLE;
+            setTool(toolTypes.TRIANGLE)
             selectButton("triangleButton");
             selectCursor("triangleButton");
             break;
@@ -535,6 +610,7 @@ function setColorSetInMenu(set) {
             const color = colors[key];
             colorCircle.style.backgroundColor = color;
             colorCircle.id = color;
+            colorCircle.alt = color;
         }
 
     }
@@ -636,4 +712,9 @@ function showUndoButton(show) {
         hideElementByID("undoButton",true);
         document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
     }
+}
+
+function setTool(toolType) {
+    currentTool = toolType;
+    clickCount = 0;
 }
