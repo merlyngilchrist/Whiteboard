@@ -486,6 +486,41 @@ if (canvas.getContext) {
         link.click();
         document.body.removeChild(link);
     }
+
+    function pickColorFromCanvas(event) {
+        if (currentTool === toolTypes.COLOR_PICKER) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            context.moveTo(x, y);
+            const imageData = context.getImageData(x, y, 1, 1);
+            const pixel = imageData.data;
+            const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+            const rgbValues = pickedColor.match(/\d+/g).map(Number);
+            const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
+            changeColor(hexColor);
+            canvas.removeEventListener('click', pickColorFromCanvas);
+            selectPenTool();
+        }
+    }
+
+    function getPreviewColor(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        context.moveTo(x, y);
+        const imageData = context.getImageData(x, y, 1, 1);
+        const pixel = imageData.data;
+        const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+        const rgbValues = pickedColor.match(/\d+/g).map(Number);
+        const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
+        updatePreviewColor(hexColor);
+    }
+
+    function rgbToHex(r, g, b) {
+        const componentToHex = (c) => c.toString(16).padStart(2, '0');
+        return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+    }
 }
 
 /**
@@ -557,32 +592,9 @@ function selectColorPicker() {
     setTool(toolTypes.COLOR_PICKER)
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
-
     canvas.addEventListener('click', pickColorFromCanvas);
 }
 
-function pickColorFromCanvas(event) {
-    if (currentTool === toolTypes.COLOR_PICKER) {
-        //const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const context = canvas.getContext("2d");
-        const imageData = context.getImageData(x, y, 1, 1);
-        const pixel = imageData.data;
-        const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-        const rgbValues = pickedColor.match(/\d+/g).map(Number);
-        const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
-        changeColor(hexColor);
-        canvas.removeEventListener('click', pickColorFromCanvas);
-        selectPenTool();
-    }
-}
-
-function rgbToHex(r, g, b) {
-    const componentToHex = (c) => c.toString(16).padStart(2, '0');
-    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
-}
 /**
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
@@ -842,8 +854,9 @@ function setTool(toolType) {
 
     // Color Picker stuff
         if (currentTool === toolTypes.COLOR_PICKER) {
-            updatePreviewColor('blue');
+            addEventListener('mousemove', getPreviewColor);
         } else {
+            removeEventListener('mousemove', getPreviewColor);
             updatePreviewColor('transparent');
         }
         // Hide penSizeMenu and cursorCircle with the use of the color picker or fill
