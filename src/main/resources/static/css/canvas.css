@@ -104,12 +104,8 @@ button img {
     top: 55.9%;
 }
 
-#textButton {
-    top: 61.9%;
-}
-
 #colorPickerButton {
-    top: 67.9%;
+    top: 61.9%;
     border-bottom-right-radius: 30%;
 }
 
@@ -208,7 +204,7 @@ button img {
 
 }
 
-.menuItem .colorCircle, .menuItem #currentColorCircle {
+.menuItem .colorCircle, #cursorCircle .colorCircle, .menuItem #currentColorCircle {
     border: 1px solid black;
     width: 85%;
     height: 85%;
@@ -303,12 +299,23 @@ button img {
     border: 1px dashed grey;
     border-radius: 50%;
     pointer-events: none;
+    background-color: transparent;
+    z-index: 10;
+}
+
+#colorPickerPreviewCircle {
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
     z-index: 10;
 }
 
 /* Cursor Updating */
 .pen-cursor {
     cursor: url("../images/pen_cursor.png") 0 32, default;
+    border: white 1px solid;
 }
 
 .eraser-cursor {
@@ -328,7 +335,7 @@ button img {
 }
 
 #saveIcon {
-    scale: 75%;
+    scale: 80%;
 }
 
 #saveButton {
