@@ -4,7 +4,9 @@ const penSizeText = document.getElementById("penSizeText");
 // import * as signalR from "@microsoft/signalr";
 
 let lastX, lastY;
+let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
 let penSize = 10;
+let fillShape = true;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -42,20 +44,18 @@ const colors = Object.freeze({
     CYAN: "cyan",
     TEAL: "#58d68d",
 
-    // 12 secondary colors (faded colors??)
-    LIGHTBLUE: "#9FBCF8",
-    LIGHTGREEN: "#A3F9A0",
-    LIGHTYELLOW: "#E5F474",
+    // 12 secondary colors
+    LIGHT_BLUE: "#9FBCF8",
+    LIGHT_GREEN: "#A3F9A0",
+    LIGHT_YELLOW: "#E5F474",
     BROWN: "#694310",
     LIGHT_BROWN: "#A57638",
     LIGHT_RED: "#F25151",
     NAVY: "#04236B",
     LIGHT_PURPLE: "#B76EEF",
     OFF_RED: "#A7171A",
-
     // Dev colors
-    JAXEN_ORANGE: '#F39C12',
-    //MERLYN_RED: 'regular red color',
+    JAXEN_ORANGE: '#EDC453',
     OWEN_PURPLE: '#642D96',
     ZACH_LIME: '#12E90B'
 
@@ -74,6 +74,26 @@ window.onload = function() {
     changeColor(currentColor);
     testConnection();
     setSessionCodeText("42069");
+};
+
+const sessionId = "default-session-id";
+const socket = new WebSocket(`wss://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net/canvas`);
+
+
+socket.onopen = function (event){
+    console.log("WebSocket is connected.")
+};
+
+socket.onmessage = function (event){
+    let data = JSON.parse(event.data);
+};
+
+socket.onclose = function (event){
+    console.log("Websocket is closed.");
+};
+
+socket.onerror = function (error){
+    console.error("WebSocket Error: ", error);
 };
 
 /**
@@ -100,20 +120,6 @@ function testConnection(){
         });
 }
 
-//SignalR connection
-// const connection = new signalR.HubConnectionBuilder()
-//     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
-//     .build();
-
-//Turn connection on
-// connection.on("ReceiveDrawing", (x, y, action) => {
-//     drawFromServer(x, y, action);
-// });
-
-//Starts connection
-// connection.start().then(() => {
-//     joinSession();
-// }).catch(err => console.error(err));
 
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
@@ -131,6 +137,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', drawPen);
+    canvas.addEventListener('mousedown', drawShape);
     canvas.addEventListener('mouseleave', stopDrawing);
     canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
@@ -197,6 +204,8 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, canvas.width, canvas.height);
     selectCursor("penButton");
     checkUndoRedoButtons();
 
@@ -205,6 +214,7 @@ if (canvas.getContext) {
      * @param event = the 'mousedown' event listener
      */
     function startDrawing(event) {
+        if (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER) return;
         drawing = true;
         context.beginPath();
         // The idea to use lastX and lastY in order to fix the undo/redo leaving a singular dot behind was not mine and came from ChatGPT - Owen
@@ -212,17 +222,18 @@ if (canvas.getContext) {
         lastY = event.clientY - rect.top;
         context.moveTo(lastX, lastY);
         saveCanvas();
-        // sendDrawing(event, "start");
     }
 
     /**
      * stops drawing on the canvas.
      */
     function stopDrawing() {
-        drawing = false;
-        lastX = null;
-        lastY = null;
-        // sendDrawing({clientX: 0, clientY: 0}, "end");
+        if (currentTool === toolTypes.PEN) {
+            drawing = false;
+            lastX = null;
+            lastY = null;
+            // sendDrawing({clientX: 0, clientY: 0}, "end");
+        }
     }
 
     /**
@@ -232,19 +243,86 @@ if (canvas.getContext) {
     function drawPen(event) {
         if (!drawing || (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER)) return;
 
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
 
-        if (x !== lastX || y !== lastY) {
-            context.lineTo(x, y);
+        let data = {
+            x: event.clientX,
+            y: event.clientY,
+            color: currentColor,
+            size: penSize
+        };
+
+        // const x = event.clientX - rect.left;
+        // const y = event.clientY - rect.top;
+
+        if (data.x !== lastX || data.y !== lastY) {
+            context.lineTo(data.x, data.y);
             context.stroke();
             context.beginPath();
             context.moveTo(x, y);
-            lastX = x;
-            lastY = y;
+            lastX = data.x;
+            lastY = data.y;
         }
 
-        // sendDrawing(event, "draw");
+        sendDrawing(data);
+    }
+
+
+    function drawShape(event) {
+        const x = event.clientX - rect.left; // X coordinate of the mouse
+        const y = event.clientY - rect.top;  // Y coordinate of the mouse
+
+        if (clickCount === 0) {
+            lastX = x;
+            lastY = y;
+            clickCount++;
+            return;
+        }
+
+        switch (currentTool) {
+            case toolTypes.CIRCLE:
+                // Calculate the radius as the distance between the starting point and current point
+                const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+
+                context.beginPath();  // Start a new path for the circle
+                context.arc(lastX, lastY, radius, 0, Math.PI * 2); // Draw the circle
+
+                break;
+
+            case toolTypes.SQUARE:
+                context.beginPath();
+                context.moveTo(lastX, lastY); // Start at the first click position
+
+                // Draw the square
+                context.lineTo(x, lastY);
+                context.lineTo(x, y);
+                context.lineTo(lastX, y);
+                context.lineTo(lastX, lastY);
+                context.lineTo(x, lastY);
+
+                break;
+
+            case toolTypes.TRIANGLE:
+                context.beginPath();
+                const triangleTip = lastX - ((lastX - x) / 2);
+
+                context.moveTo(triangleTip, lastY); // Start at the first click position
+                context.lineTo(x, y);
+                context.lineTo(lastX, y);
+                context.lineTo(triangleTip, lastY);
+                context.lineTo(x, y);
+
+                break;
+        }
+
+        if (fillShape) {
+            context.fillStyle = currentColor; // Replace 'currentColor' with your desired color or variable
+            context.fill(); // Fill the circle with the current fill style
+        } else {
+            context.closePath();
+        }
+
+        clickCount = 0; // Reset the click count
+        context.stroke(); // Apply the stroke to draw the shape
     }
 
     /**
@@ -252,11 +330,21 @@ if (canvas.getContext) {
      * @param event event from event listener.
      * @param action action being sent.
      */
-    function sendDrawing(event, action){
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
+    function sendDrawing(data){
+       if (socket.readyState === WebSocket.OPEN){
+           socket.send(JSON.stringify(data));
+       }
     }
+
+    // function updateCanvasWithData(data){
+    //     context.beginPath();
+    //     context.moveTo(lastX, lastY);
+    //     context.lineTo(data.x, data.y);
+    //     context.stroke();
+    //     context.closePath();
+    //     lastX = data.x;
+    //     lastY = data.y;
+    // }
 
     /**
      * gets id of the color button then calls changeColor.
@@ -347,6 +435,16 @@ if (canvas.getContext) {
         undoStack.push(context.getImageData(0,0,canvas.width,canvas.height));
         checkUndoRedoButtons();
     }
+
+    function saveCanvasToLocal() {
+        const dataURL = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = 'canvas-image.png';
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
 
 /**
@@ -415,7 +513,7 @@ function redoButton() {
  * calls selectButton and selectCursor.
  */
 function selectColorPicker() {
-    currentTool = toolTypes.COLOR_PICKER;
+    setTool(toolTypes.COLOR_PICKER)
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 
@@ -448,7 +546,7 @@ function rgbToHex(r, g, b) {
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
 function selectFillTool() {
-    currentTool = toolTypes.FILL;
+    setTool(toolTypes.FILL)
     selectButton("fillButton");
     selectCursor("fillButton");
 }
@@ -456,9 +554,8 @@ function selectFillTool() {
  * sets current tool to text, calls selectButton, and selectCursor.
  */
 function selectTextTool() {
-    currentTool = toolTypes.TEXT;
+    setTool(toolTypes.TEXT)
     selectButton("textButton");
-    //selectCursor("fillButton")
 }
 
 /**
@@ -475,6 +572,10 @@ function decreasePenSizeButton() {
     changeSize(--penSize);
 }
 
+function saveButton() {
+    saveCanvasToLocal();
+}
+
 /**
  * sets current tool to selected shape, calls selectButton, and selectCursor.
  * @param shape shape being selected
@@ -482,17 +583,17 @@ function decreasePenSizeButton() {
 function selectShapeTool(shape) {
     switch (shape) {
         case "circle":
-            currentTool = toolTypes.CIRCLE;
+            setTool(toolTypes.CIRCLE)
             selectButton("circleButton");
             selectCursor("circleButton");
             break;
         case "square":
-            currentTool = toolTypes.SQUARE;
+            setTool(toolTypes.SQUARE)
             selectButton("squareButton");
             selectCursor("squareButton");
             break;
         case "triangle":
-            currentTool = toolTypes.TRIANGLE;
+            setTool(toolTypes.TRIANGLE)
             selectButton("triangleButton");
             selectCursor("triangleButton");
             break;
@@ -525,7 +626,7 @@ function selectButton(buttonID) {
         displayColorOptions('false');
     }
 
-    // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
+    // Hide penSizeMenu and cursorCircle with the use of the color picker or fill
     let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
     hideElementByID("penSizeMenu", currentToolIsFillOrColorPicker);
     hideElementByID("cursorCircle", currentToolIsFillOrColorPicker);
@@ -586,6 +687,7 @@ function setColorSetInMenu(set) {
             const color = colors[key];
             colorCircle.style.backgroundColor = color;
             colorCircle.id = color;
+            colorCircle.alt = color;
         }
 
     }
@@ -606,7 +708,6 @@ function setColorSetInMenu(set) {
         changeColorSetButton1.classList.add("unselectedTool");
         changeColorSetButton2.classList.remove("unselectedTool");
     }
-
     selectColorOption(currentColor);
 }
 
@@ -674,6 +775,7 @@ function showRedoButton(show) {
         document.getElementById("undoButton").style.borderTopRightRadius = '30%';
     }
 }
+
 /**
  * shows or hides undo button.
  * @param show 'true' or 'false' if object should be hidden.
@@ -686,4 +788,9 @@ function showUndoButton(show) {
         hideElementByID("undoButton",true);
         document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
     }
+}
+
+function setTool(toolType) {
+    currentTool = toolType;
+    clickCount = 0;
 }
