@@ -9,6 +9,40 @@ public class DrawingData {
     private int tool;
     private int size;
 
+    private String sessionId;
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setTool(int tool) {
+        this.tool = tool;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
     public int getX() {
         return x;
     }

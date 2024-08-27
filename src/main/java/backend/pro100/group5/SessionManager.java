@@ -2,27 +2,40 @@ package backend.pro100.group5;
 
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+
 public class SessionManager {
 
-    private static final ConcurrentMap<String , WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String , Set<WebSocketSession>> sessions = new ConcurrentHashMap<>();
 
-    public static void addSession(String sessionId, WebSocketSession session){
-        sessions.put(sessionId,session);
+    public static void createSession(String sessionId){
+
     }
 
-    public static void removeSession(String sessionId){
-        sessions.remove(sessionId);
+    public static void joinSession(String sessionId, WebSocketSession session){
+        sessions.getOrDefault(sessionId, ConcurrentHashMap.newKeySet()).add(session);
     }
 
-    public static Set<WebSocketSession> getSessions(){
-        return Set.copyOf(sessions.values());
+    public static void removeSession(String sessionId, WebSocketSession session){
+        Set<WebSocketSession> socketSessions = sessions.get(sessionId);
+        if (sessions != null){
+            sessions.remove(session);
+            if (sessions.isEmpty()){
+                sessions.remove(sessionId);
+            }
+        }
+    }
+
+    public static boolean sessionExists(String sessionId){
+        return sessions.containsKey(sessionId);
+    }
+
+    public static Set<WebSocketSession> getSessions(String sessionId){
+        return sessions.getOrDefault(sessionId, ConcurrentHashMap.newKeySet());
     }
 
 
