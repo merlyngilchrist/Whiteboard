@@ -1,6 +1,7 @@
 const canvas = document.getElementById("whiteboard");
 const cursorCircle = document.getElementById("cursorCircle");
 const penSizeText = document.getElementById("penSizeText");
+// import * as signalR from "@microsoft/signalr";
 
 let lastX, lastY;
 let penSize = 10;
@@ -31,7 +32,7 @@ const colors = Object.freeze({
     BLACK: "black",
     DARKGREY: "#707b7c",
     LIGHTGREY: "#bfc9ca",
-    RED: "#FF0000",
+    RED: "#FF1010",
     GREEN: "#317140",
     BLUE: "blue",
     YELLOW: "yellow",
@@ -42,9 +43,9 @@ const colors = Object.freeze({
     TEAL: "#58d68d",
 
     // 12 secondary colors (faded colors??)
-    LIGHT_BLUE: "#9FBCF8",
-    LIGHT_GREEN: "#A3F9A0",
-    LIGHT_YELLOW: "#E5F474",
+    LIGHTBLUE: "#9FBCF8",
+    LIGHTGREEN: "#A3F9A0",
+    LIGHTYELLOW: "#E5F474",
     BROWN: "#694310",
     LIGHT_BROWN: "#A57638",
     LIGHT_RED: "#F25151",
@@ -65,7 +66,6 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
-
 /**
  * initializes basic settings when browser loads.
  */
@@ -100,6 +100,21 @@ function testConnection(){
         });
 }
 
+//SignalR connection
+// const connection = new signalR.HubConnectionBuilder()
+//     .withUrl("https://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net")
+//     .build();
+
+//Turn connection on
+// connection.on("ReceiveDrawing", (x, y, action) => {
+//     drawFromServer(x, y, action);
+// });
+
+//Starts connection
+// connection.start().then(() => {
+//     joinSession();
+// }).catch(err => console.error(err));
+
 if (canvas.getContext) {
     const context = canvas.getContext("2d");
     // I got this code from the Mozilla developer documents: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas - Owen
@@ -117,7 +132,7 @@ if (canvas.getContext) {
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mousemove', drawPen);
     canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked - Owen
+    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
             changeSize(++penSize);
@@ -197,6 +212,7 @@ if (canvas.getContext) {
         lastY = event.clientY - rect.top;
         context.moveTo(lastX, lastY);
         saveCanvas();
+        // sendDrawing(event, "start");
     }
 
     /**
@@ -206,6 +222,7 @@ if (canvas.getContext) {
         drawing = false;
         lastX = null;
         lastY = null;
+        // sendDrawing({clientX: 0, clientY: 0}, "end");
     }
 
     /**
@@ -213,8 +230,7 @@ if (canvas.getContext) {
      * @param event = 'mousemove' event listener
      */
     function drawPen(event) {
-        if (!drawing) return;
-        if (currentTool !== toolTypes.PEN || currentTool !== toolTypes.ERASER) return;
+        if (!drawing || (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER)) return;
 
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
@@ -227,6 +243,19 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
         }
+
+        // sendDrawing(event, "draw");
+    }
+
+    /**
+     * sends drawings to signalR.
+     * @param event event from event listener.
+     * @param action action being sent.
+     */
+    function sendDrawing(event, action){
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        connection.invoke("SendDrawing", sessionId, x, y, action).catch(err => console.error(err));
     }
 
     /**
@@ -358,7 +387,6 @@ function selectPenTool() {
     selectButton("penButton");
     selectCursor("penButton");
 }
-
 /**
  * sets current tool to eraser, sets color to white, calls selectButton, and selectCursor.
  */
@@ -390,8 +418,32 @@ function selectColorPicker() {
     currentTool = toolTypes.COLOR_PICKER;
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
+
+    canvas.addEventListener('click', pickColorFromCanvas);
 }
 
+function pickColorFromCanvas(event) {
+    if (currentTool === toolTypes.COLOR_PICKER) {
+        //const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const context = canvas.getContext("2d");
+        const imageData = context.getImageData(x, y, 1, 1);
+        const pixel = imageData.data;
+        const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+        const rgbValues = pickedColor.match(/\d+/g).map(Number);
+        const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
+        changeColor(hexColor);
+        canvas.removeEventListener('click', pickColorFromCanvas);
+        selectPenTool();
+    }
+}
+
+function rgbToHex(r, g, b) {
+    const componentToHex = (c) => c.toString(16).padStart(2, '0');
+    return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
+}
 /**
  * sets current tool to fill, calls selectButton, and selectCursor.
  */
@@ -400,13 +452,13 @@ function selectFillTool() {
     selectButton("fillButton");
     selectCursor("fillButton");
 }
-
 /**
  * sets current tool to text, calls selectButton, and selectCursor.
  */
 function selectTextTool() {
     currentTool = toolTypes.TEXT;
     selectButton("textButton");
+    //selectCursor("fillButton")
 }
 
 /**
@@ -467,14 +519,13 @@ function selectButton(buttonID) {
     selectCursor(buttonID);
     changeColor(currentColor);
     changeSize(penSize);
-
     if (currentTool === toolTypes.ERASER) {
         displayColorOptions('hide');
     } else {
         displayColorOptions('false');
     }
 
-    // Hide penSizeMenu and cursorCircle with the use of the color picker or fill
+    // Hide penSizeMenu and cursorCicle with the use of the color picker or fill
     let currentToolIsFillOrColorPicker = currentTool === toolTypes.FILL || currentTool === toolTypes.COLOR_PICKER;
     hideElementByID("penSizeMenu", currentToolIsFillOrColorPicker);
     hideElementByID("cursorCircle", currentToolIsFillOrColorPicker);
@@ -623,7 +674,6 @@ function showRedoButton(show) {
         document.getElementById("undoButton").style.borderTopRightRadius = '30%';
     }
 }
-
 /**
  * shows or hides undo button.
  * @param show 'true' or 'false' if object should be hidden.
