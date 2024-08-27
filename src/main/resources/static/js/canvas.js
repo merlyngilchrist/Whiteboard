@@ -10,7 +10,7 @@ let fillShape = true;
 let buttons = [
     "penButton",
     "eraserButton",
-    "fillButton",
+    "lineButton",
     "undoButton",
     "redoButton",
     "circleButton",
@@ -21,7 +21,7 @@ let buttons = [
 const toolTypes = Object.freeze({
     PEN: 0,
     ERASER: 1,
-    FILL: 2,
+    LINE: 2,
     CIRCLE: 3,
     SQUARE: 4,
     TRIANGLE: 5,
@@ -54,9 +54,9 @@ const colors = Object.freeze({
     LIGHT_PURPLE: "#B76EEF",
     OFF_RED: "#A7171A",
     // Dev colors
-    JAXEN_ORANGE: '#EDC453',
-    OWEN_PURPLE: '#642D96',
-    ZACH_LIME: '#12E90B'
+    JAXEN_ORANGE: "#EDC453",
+    OWEN_PURPLE: "#642D96",
+    ZACH_LIME: "#12E90B"
 
 
 
@@ -65,6 +65,7 @@ let currentColor = colors.BLACK;
 let currentTool = toolTypes.PEN;
 let undoStack = [];
 let redoStack = [];
+
 /**
  * initializes basic settings when browser loads.
  */
@@ -78,19 +79,34 @@ window.onload = function() {
 const sessionId = "default-session-id";
 const socket = new WebSocket(`wss://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net/canvas`);
 
-
+/**
+ *
+ * @param event
+ */
 socket.onopen = function (event){
     console.log("WebSocket is connected.")
 };
 
+/**
+ *
+ * @param event
+ */
 socket.onmessage = function (event){
     let data = JSON.parse(event.data);
 };
 
+/**
+ *
+ * @param event
+ */
 socket.onclose = function (event){
     console.log("Websocket is closed.");
 };
 
+/**
+ *
+ * @param error
+ */
 socket.onerror = function (error){
     console.error("WebSocket Error: ", error);
 };
@@ -104,7 +120,6 @@ function setSessionCodeText(code) {
     textContainer.innerHTML = "Session code: " + code;
 }
 
-// JavaScript test connection with Java
 /**
  * tests connection with java code, if no connection sends error.
  */
@@ -132,13 +147,17 @@ if (canvas.getContext) {
     canvas.style.height = `${rect.height}px`;
     // end of Mozilla dev code
     let drawing = false;
-    canvas.addEventListener('mousemove', moveCursorCircle); // Cursor circle
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mousemove', drawPen);
-    canvas.addEventListener('mousedown', drawShape);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('wheel',function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
+    canvas.addEventListener("mousemove", moveCursorCircle); // Cursor circle
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mousemove", drawPen);
+    canvas.addEventListener("mousedown", drawShape);
+    canvas.addEventListener("click",drawLine);
+    canvas.addEventListener("mouseleave", stopDrawing);
+    /**
+     *
+     */
+    canvas.addEventListener("wheel",function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
             changeSize(++penSize);
@@ -146,13 +165,16 @@ if (canvas.getContext) {
             changeSize(--penSize);
         }
     });
+    /**
+     *
+     */
     document.addEventListener("keydown", function (event) {
         /*
         * Ctrl + Z - UNDO
         * Ctrl + Y - REDO
         * P        - SELECT PEN
         * E        - SELECT ERASER
-        * F        - SELECT FILL
+        * F        - SELECT LINE
         * S        - SELECT SQUARE
         * C        - SELECT CIRCLE
         * D        - SELECT TRIANGLE
@@ -162,40 +184,40 @@ if (canvas.getContext) {
         * =        - PEN SIZE UP
          */
 
-        if (event.key.toLowerCase() === 'p') {
+        if (event.key.toLowerCase() === "p") {
             selectPenTool();
         }
-        else if (event.key.toLowerCase() === 'e') {
+        else if (event.key.toLowerCase() === "e") {
             selectEraserTool();
         }
-        else if (event.key.toLowerCase() === 'f') {
-            selectFillTool();
+        else if (event.key.toLowerCase() === "f") {
+            selectLineTool();
         }
-        else if (event.key.toLowerCase() === 's') {
-            selectShapeTool('square');
+        else if (event.key.toLowerCase() === "s") {
+            selectShapeTool("square");
         }
-        else if (event.key.toLowerCase() === 'c') {
-            selectShapeTool('circle');
+        else if (event.key.toLowerCase() === "c") {
+            selectShapeTool("circle");
         }
-        else if (event.key.toLowerCase() === 'd') {
+        else if (event.key.toLowerCase() === "d") {
             selectShapeTool("triangle");
         }
-        else if (event.key.toLowerCase() === 'i') {
+        else if (event.key.toLowerCase() === "i") {
             selectColorPicker();
         }
-        else if (event.key.toLowerCase() === 't') {
+        else if (event.key.toLowerCase() === "t") {
 
         }
-        else if (event.key === '-' || event.key === '_') {
+        else if (event.key === "-" || event.key === "_") {
             decreasePenSizeButton();
         }
-        else if (event.key === '=' || event.key === '+') {
+        else if (event.key === "=" || event.key === "+") {
             increasePenSizeButton();
         }
-        else if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+        else if (event.ctrlKey && event.key.toLowerCase() === "z") {
             undoButton();
         }
-        else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+        else if (event.ctrlKey && event.key.toLowerCase() === "y") {
             redoButton();
         }
     });
@@ -203,14 +225,14 @@ if (canvas.getContext) {
     changeSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
-    context.fillStyle = 'white';
+    context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
     selectCursor("penButton");
     checkUndoRedoButtons();
 
     /**
      * Begins a path when clicked
-     * @param event = the 'mousedown' event listener
+     * @param event = the "mousedown" event listener
      */
     function startDrawing(event) {
         if (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER) return;
@@ -236,8 +258,8 @@ if (canvas.getContext) {
     }
 
     /**
-     * Draws on the screen, but only when drawing is set to 'true'
-     * @param event = 'mousemove' event listener
+     * Draws on the screen, but only when drawing is set to "true"
+     * @param event = "mousemove" event listener
      */
     function drawPen(event) {
         if (!drawing || (currentTool !== toolTypes.PEN && currentTool !== toolTypes.ERASER)) return;
@@ -262,7 +284,10 @@ if (canvas.getContext) {
         sendDrawing(data);
     }
 
-
+    /**
+    * Function used to draw circles (not ellipses), squares, and triangles with a starting point click and an ending point click.
+     * @param event = mouse event from event listener
+     */
     function drawShape(event) {
         const x = event.clientX - rect.left; // X coordinate of the mouse
         const y = event.clientY - rect.top;  // Y coordinate of the mouse
@@ -271,7 +296,7 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
             clickCount++;
-            //canvas.addEventListener('mousemove', drawGhostShape);  // Add the ghost drawing event
+            //canvas.addEventListener("mousemove", drawGhostShape);  // Add the ghost drawing event
             return;
         }
 
@@ -312,18 +337,21 @@ if (canvas.getContext) {
         }
 
         if (fillShape) {
-            context.fillStyle = currentColor; // Replace 'currentColor' with your desired color or variable
-            context.fill(); // Fill the circle with the current fill style
+            context.lineStyle = currentColor; // Replace "currentColor" with your desired color or variable
+            context.line(); // Line the circle with the current line style
         } else {
             context.closePath();
         }
 
         clickCount = 0; // Reset the click count
         context.stroke(); // Apply the stroke to draw the shape
-        canvas.removeEventListener('mousemove', drawGhostShape);  // Remove the ghost drawing event
+        canvas.removeEventListener("mousemove", drawGhostShape);  // Remove the ghost drawing event
     }
 
-
+    /**
+     *
+     * @param event
+     */
     function drawGhostShape(event) {
         if (clickCount === 0) return;  // Only draw the ghost shape after the first click
 
@@ -336,7 +364,7 @@ if (canvas.getContext) {
                 const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
                 context.beginPath();
                 context.arc(lastX, lastY, radius, 0, Math.PI * 2);
-                context.strokeStyle = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent stroke
+                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
                 context.stroke();
                 break;
 
@@ -347,7 +375,7 @@ if (canvas.getContext) {
                 context.lineTo(x, y);
                 context.lineTo(lastX, y);
                 context.closePath();
-                context.strokeStyle = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent stroke
+                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
                 context.stroke();
                 break;
 
@@ -358,18 +386,37 @@ if (canvas.getContext) {
                 context.lineTo(x, y);
                 context.lineTo(lastX, y);
                 context.closePath();
-                context.strokeStyle = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent stroke
+                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
                 context.stroke();
                 break;
         }
     }
 
+    /**
+     * Drag to draw a line between two user-selected points
+     * @param event = mousedown event listener
+     */
+    function drawLine(event) {
+        if (currentTool !== toolTypes.LINE) return;
+        const x = event.clientX - rect.left; // X coordinate of the mouse
+        const y = event.clientY - rect.top;  // Y coordinate of the mouse
 
+        if (clickCount === 0) {
+            lastX = x;
+            lastY = y;
+            clickCount++;
+        } else {
+            context.beginPath();
+            context.moveTo(lastX,lastY);
+            context.lineTo(x,y);
+            context.stroke();
+            clickCount = 0;
+        }
+    }
 
     /**
-     * sends drawings to signalR.
-     * @param event event from event listener.
-     * @param action action being sent.
+     * sends drawings to websocket.
+     * @param data = data being sent through websocket
      */
     function sendDrawing(data){
        if (socket.readyState === WebSocket.OPEN){
@@ -377,6 +424,9 @@ if (canvas.getContext) {
        }
     }
 
+    /**
+     *
+     */
     // function updateCanvasWithData(data){
     //     context.beginPath();
     //     context.moveTo(lastX, lastY);
@@ -426,7 +476,7 @@ if (canvas.getContext) {
     }
 
     /**
-     * checks undo
+     * checks undo and redo and displays/hides the buttons if you can or cannot do either action.
      */
     function checkUndoRedoButtons() {
         if (undoStack.length === 0) {
@@ -477,10 +527,13 @@ if (canvas.getContext) {
         checkUndoRedoButtons();
     }
 
+    /**
+    * Downloads the canvas to the user's downloads folder
+     */
     function saveCanvasToLocal() {
         const dataURL = canvas.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.download = 'canvas-image.png';
+        const link = document.createElement("a");
+        link.download = "canvas-image.png";
         link.href = dataURL;
         document.body.appendChild(link);
         link.click();
@@ -489,10 +542,10 @@ if (canvas.getContext) {
 }
 
 /**
- * removes the following: 'pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor' from the screen
+ * removes the following: "pen-cursor","eraser-cursor","line-cursor","dropper-cursor","shape-cursor" from the screen
  */
 function removeCursors() {
-    document.body.classList.remove('pen-cursor','eraser-cursor','fill-cursor','dropper-cursor','shape-cursor');
+    document.body.classList.remove("pen-cursor","eraser-cursor","line-cursor","dropper-cursor","shape-cursor");
 }
 
 /**
@@ -502,19 +555,19 @@ function removeCursors() {
 function selectCursor(button) {
     removeCursors()
     if (button.localeCompare("penButton") === 0) {
-        document.body.classList.add('pen-cursor');
+        document.body.classList.add("pen-cursor");
     }
     if (button.localeCompare("eraserButton") === 0) {
-        document.body.classList.add('eraser-cursor');
+        document.body.classList.add("eraser-cursor");
     }
-    if (button.localeCompare("fillButton") === 0) {
-        document.body.classList.add('fill-cursor');
+    if (button.localeCompare("lineButton") === 0) {
+        document.body.classList.add("line-cursor");
     }
     if (button.localeCompare("colorPickerButton") === 0) {
-        document.body.classList.add('dropper-cursor');
+        document.body.classList.add("dropper-cursor");
     }
     if (button.localeCompare("circleButton") === 0 || button.localeCompare("squareButton") === 0 || button.localeCompare("triangleButton") === 0) {
-        document.body.classList.add('shape-cursor');
+        document.body.classList.add("shape-cursor");
     }
 }
 
@@ -532,7 +585,7 @@ function selectPenTool() {
 function selectEraserTool() {
     setTool(toolTypes.ERASER)
     selectButton("eraserButton");
-    changeColor('white');
+    changeColor("white");
     selectCursor("eraserButton");
 }
 
@@ -558,7 +611,7 @@ function selectColorPicker() {
     selectButton("colorPickerButton");
     selectCursor("colorPickerButton");
 
-    canvas.addEventListener('click', pickColorFromCanvas);
+    canvas.addEventListener("click", pickColorFromCanvas);
 }
 
 function pickColorFromCanvas(event) {
@@ -574,22 +627,29 @@ function pickColorFromCanvas(event) {
         const rgbValues = pickedColor.match(/\d+/g).map(Number);
         const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
         changeColor(hexColor);
-        canvas.removeEventListener('click', pickColorFromCanvas);
+        canvas.removeEventListener("click", pickColorFromCanvas);
         selectPenTool();
     }
 }
 
+/**
+ *
+ * @param r
+ * @param g
+ * @param b
+ * @returns {string}
+ */
 function rgbToHex(r, g, b) {
-    const componentToHex = (c) => c.toString(16).padStart(2, '0');
+    const componentToHex = (c) => c.toString(16).padStart(2, "0");
     return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
 }
 /**
- * sets current tool to fill, calls selectButton, and selectCursor.
+ * sets current tool to line, calls selectButton, and selectCursor.
  */
-function selectFillTool() {
-    setTool(toolTypes.FILL)
-    selectButton("fillButton");
-    selectCursor("fillButton");
+function selectLineTool() {
+    setTool(toolTypes.LINE)
+    selectButton("lineButton");
+    selectCursor("lineButton");
 }
 
 
@@ -607,6 +667,9 @@ function decreasePenSizeButton() {
     changeSize(--penSize);
 }
 
+/**
+* An on click function that calls the saveCanvasToLocal function
+ */
 function saveButton() {
     saveCanvasToLocal();
 }
@@ -661,7 +724,7 @@ function selectButton(buttonID) {
  * Otherwise, removes selectedColorToken.
  */
 function selectColorOption() {
-    document.querySelectorAll('.colorCircle').forEach(circle => {
+    document.querySelectorAll(".colorCircle").forEach(circle => {
         const buttonColor = circle.id;
         if (buttonColor.localeCompare(currentColor) === 0) {
             circle.parentElement.classList.add("selectedColor");
@@ -685,7 +748,7 @@ function updateCurrentColorCircle() {
  */
 function moveCursorCircle(event) {
     if (currentTool === toolTypes.COLOR_PICKER) {
-        cursorCircle.classList.add('colorCircle');
+        cursorCircle.classList.add("colorCircle");
         cursorCircle.style.width = `20px`;
         cursorCircle.style.height = `20px`;
         const x = event.clientX - cursorCircle.offsetWidth / 2;
@@ -694,7 +757,7 @@ function moveCursorCircle(event) {
         cursorCircle.style.top = `${y-40}px`;
 
     } else {
-        cursorCircle.classList.remove('colorCircle');
+        cursorCircle.classList.remove("colorCircle");
         cursorCircle.style.width = `${penSize}px`;
         cursorCircle.style.height = `${penSize}px`;
         const x = event.clientX - cursorCircle.offsetWidth / 2;
@@ -707,8 +770,8 @@ function moveCursorCircle(event) {
 }
 
 /**
- * moves the cursor circle to the mouse x, y.
- * @param event event from event listener.
+ * previews the color chosen with the color picker/dropper tool
+ * @param color = color chosen by tool
  */
 function updatePreviewColor(color) {
     cursorCircle.style.backgroundColor = color;
@@ -767,7 +830,7 @@ function displayColorOptions(display) {
     const currentColorButton = document.getElementById("currentColorCircle").parentElement;
     let colorSelectIsShown;
     if (display.localeCompare("true") === 0) { //Display color select elements
-        colorSelectIsShown = (colorContainer.style.display.localeCompare('') === 0);
+        colorSelectIsShown = (colorContainer.style.display.localeCompare("") === 0);
         if (colorContainer.classList.contains("disabled")) colorSelectIsShown = false;
         if (colorSelectIsShown) {
             hideElementByHTMLObject(colorContainer, true);
@@ -779,7 +842,7 @@ function displayColorOptions(display) {
         hideElementByHTMLObject(colorContainer, true);
         hideElementByHTMLObject(currentColorButton, true);
 
-    } else if (display.localeCompare("false") === 0) { //Don't display select menu but display current color button
+    } else if (display.localeCompare("false") === 0) { //Don"t display select menu but display current color button
         hideElementByHTMLObject(colorContainer, true);
         hideElementByHTMLObject(currentColorButton, false);
     }
@@ -788,7 +851,7 @@ function displayColorOptions(display) {
 /**
  * hides element by id.
  * @param id id of element.
- * @param hide 'true' or 'false' if object should be hidden.
+ * @param hide "true" or "false" if object should be hidden.
  */
 function hideElementByID(id, hide) {
     const element = document.getElementById(id);
@@ -798,7 +861,7 @@ function hideElementByID(id, hide) {
 /**
  * hides element by object.
  * @param object object element.
- * @param hide 'true' or 'false' if object should be hidden.
+ * @param hide "true" or "false" if object should be hidden.
  */
 function hideElementByHTMLObject(object, hide) {
     if (hide) {
@@ -811,54 +874,58 @@ function hideElementByHTMLObject(object, hide) {
 
 /**
  * shows or hides redo button.
- * @param show 'true' or 'false' if object should be hidden.
+ * @param show "true" or "false" if object should be hidden.
  */
 function showRedoButton(show) {
     if (show) {
         hideElementByID("redoButton",false);
-        document.getElementById("undoButton").style.borderTopRightRadius = '0%';
+        document.getElementById("undoButton").style.borderTopRightRadius = "0%";
     } else {
         hideElementByID("redoButton",true);
-        document.getElementById("undoButton").style.borderTopRightRadius = '30%';
+        document.getElementById("undoButton").style.borderTopRightRadius = "30%";
     }
 }
 
 /**
  * shows or hides undo button.
- * @param show 'true' or 'false' if object should be hidden.
+ * @param show "true" or "false" if object should be hidden.
  */
 function showUndoButton(show) {
     if (show) {
         hideElementByID("undoButton",false);
-        document.getElementById("redoButton").style.borderTopLeftRadius = '0%';
+        document.getElementById("redoButton").style.borderTopLeftRadius = "0%";
     } else {
         hideElementByID("undoButton",true);
-        document.getElementById("redoButton").style.borderTopLeftRadius = '30%';
+        document.getElementById("redoButton").style.borderTopLeftRadius = "30%";
     }
 }
 
+/**
+ * Function that sets the tool to a specified toolType
+ * @param toolType = any toolType enum value
+ */
 function setTool(toolType) {
     currentTool = toolType;
 
     // Color Picker stuff
         if (currentTool === toolTypes.COLOR_PICKER) {
-            updatePreviewColor('blue');
+            updatePreviewColor("blue");
         } else {
-            updatePreviewColor('transparent');
+            updatePreviewColor("transparent");
         }
-        // Hide penSizeMenu and cursorCircle with the use of the color picker or fill
+        // Hide penSizeMenu and cursorCircle with the use of the color picker or line
         hideElementByID("penSizeMenu", currentTool === toolTypes.COLOR_PICKER);
         //hideElementByID("cursorCircle", currentTool === toolTypes.COLOR_PICKER);
 
     // Shape drawing tool stuff
         if (currentTool !== toolTypes.CIRCLE || currentTool !== toolTypes.SQUARE || currentTool !== toolTypes.TRIANGLE) {
-            removeEventListener('mousemove', drawGhostShape);
+            removeEventListener("mousemove", drawGhostShape);
         }
 
     if (currentTool === toolTypes.ERASER) {
-        displayColorOptions('hide');
+        displayColorOptions("hide");
     } else {
-        displayColorOptions('false');
+        displayColorOptions("false");
     }
 
     clickCount = 0;
