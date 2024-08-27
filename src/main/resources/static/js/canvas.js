@@ -382,8 +382,8 @@ if (canvas.getContext) {
         }
 
         if (fillShape) {
-            context.lineStyle = currentColor; // Replace "currentColor" with your desired color or variable
-            context.line(); // Line the circle with the current line style
+            context.fillStyle = currentColor; // Replace "currentColor" with your desired color or variable
+            context.fill(); // Line the circle with the current line style
         } else {
             context.closePath();
         }
