@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap");
 
 .title {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: 48px;
     color: #333;
     text-align: center;
@@ -87,7 +87,7 @@ button img {
     top: 32%;
 }
 
-#fillButton {
+#lineButton {
     top: 38%;
 }
 
@@ -115,7 +115,7 @@ button img {
 
 .selectedTool img {
     -webkit-filter:invert(100%);
-    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert="1");
 }
 
 #undoButton, #redoButton {
@@ -148,12 +148,12 @@ button img {
 
 #increasePenSizeButton:active {
     -webkit-filter:invert(100%);
-    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert="1");
 }
 
 #decreasePenSizeButton:active {
     -webkit-filter:invert(100%);
-    filter:progid:DXImageTransform.Microsoft.BasicImage(invert='1');
+    filter:progid:DXImageTransform.Microsoft.BasicImage(invert="1");
 }
 
 #sessionCodeContainer {
@@ -322,8 +322,8 @@ button img {
     cursor: url("../images/eraser_cursor.png") 12 32, default;
 }
 
-.fill-cursor {
-    cursor: url("../images/paint-bucket_cursor.png") 32 32, default;
+.line-cursor {
+    cursor: url("../images/plus.png") 16 16, crosshair;
 }
 
 .dropper-cursor {
