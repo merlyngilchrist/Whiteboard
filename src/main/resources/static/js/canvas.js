@@ -73,11 +73,11 @@ window.onload = function() {
     setColorSetInMenu(0);
     changeColor(currentColor);
     testConnection();
-    setSessionCodeText("42069");
+    setSessionCodeText(sessionId);
 };
 
-const sessionId = "default-session-id";
-const socket = new WebSocket(`wss://pentogether-c3amhpatfncscthg.eastus-01.azurewebsites.net/canvas`);
+let sessionId = null;
+const socket = new WebSocket("wss://localhost:8080/canvas");
 
 /**
  *
@@ -93,6 +93,7 @@ socket.onopen = function (event){
  */
 socket.onmessage = function (event){
     let data = JSON.parse(event.data);
+    handleIncomingMessage(data);
 };
 
 /**
@@ -110,6 +111,50 @@ socket.onclose = function (event){
 socket.onerror = function (error){
     console.error("WebSocket Error: ", error);
 };
+
+function handleIncomingMessage(data){
+    switch (data.type){
+        case "DRAW":
+            updateCanvasWithData(data);
+            break;
+        case "CREATE_SESSION":
+            sessionId = data.sessionId;
+        case "SESSION_JOINED":
+            sessionId = data.sessionId;
+            break;
+        case "ERROR":
+            alert(data.message);
+            break;
+    }
+}
+
+function generateRandomSessionId(length = 6){
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let sessionId = "";
+    for (let i = 0; i < length; i++){
+        sessionId += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return sessionId;
+}
+
+
+function createNewSession(){
+    const randomSessionId = generateRandomSessionId();
+    const data = {
+        type: "CREATE_SESSION",
+        sessionId: randomSessionId
+    };
+    socket.send(JSON.stringify(data));
+}
+
+function joinSession(sessionCode){
+    const data = {
+      type: "JOIN_SESSION",
+        sessionId: sessionCode
+    };
+    socket.send(JSON.stringify(data));
+}
+
 
 /**
  * sets the text to the session code
@@ -419,23 +464,24 @@ if (canvas.getContext) {
      * @param data = data being sent through websocket
      */
     function sendDrawing(data){
-       if (socket.readyState === WebSocket.OPEN){
-           socket.send(JSON.stringify(data));
-       }
+        fetch("/draw")
+            if (socket.readyState === WebSocket.OPEN){
+                socket.send(JSON.stringify(data));
+            }
     }
 
     /**
      *
      */
-    // function updateCanvasWithData(data){
-    //     context.beginPath();
-    //     context.moveTo(lastX, lastY);
-    //     context.lineTo(data.x, data.y);
-    //     context.stroke();
-    //     context.closePath();
-    //     lastX = data.x;
-    //     lastY = data.y;
-    // }
+    function updateCanvasWithData(data){
+        context.beginPath();
+        context.moveTo(lastX, lastY);
+        context.lineTo(data.x, data.y);
+        context.stroke();
+        context.closePath();
+        lastX = data.x;
+        lastY = data.y;
+    }
 
     /**
      * gets id of the color button then calls changeColor.

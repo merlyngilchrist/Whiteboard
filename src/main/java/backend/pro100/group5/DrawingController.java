@@ -2,6 +2,7 @@ package backend.pro100.group5;
 
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,7 @@ public class DrawingController {
 
     private static final OkHttpClient client = new OkHttpClient();
 
-    @PostMapping("/draw")
+    @GetMapping("/draw")
     public void draw(@RequestBody DrawingData drawingData){
         String message = convertDrawingDataToMessage(drawingData);
         try {
@@ -24,7 +25,7 @@ public class DrawingController {
         }catch (Exception e){
             System.err.println("Error forwarding message: " + e.getMessage());
         }
-        forwardToWebSocketClients(message);
+        forwardToWebSocketClients(message, drawingData.getSessionId());
     }
 
     private String convertDrawingDataToMessage(DrawingData drawingData){
@@ -48,8 +49,8 @@ public class DrawingController {
         }
     }
 
-    private void forwardToWebSocketClients(String message){
-        for (WebSocketSession session : SessionManager.getSessions()){
+    private void forwardToWebSocketClients(String message, String sessionId){
+        for (WebSocketSession session : SessionManager.getSessions(sessionId)){
             try {
                 session.sendMessage(new TextMessage(message));
             } catch (IOException e){

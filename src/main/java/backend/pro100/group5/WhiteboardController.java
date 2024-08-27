@@ -1,5 +1,7 @@
 package backend.pro100.group5;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +23,22 @@ public class WhiteboardController {
     public String testConnection(){
         System.out.println("Java files have received the request for JavaScript");
         return "Connection Successful!";
+    }
+
+    @PostMapping("/createSession")
+    public ResponseEntity<String> createSession(){
+        String sessionId = UUID.randomUUID().toString();
+        SessionManager.createSession(sessionId);
+        return ResponseEntity.ok(sessionId);
+    }
+
+    @PostMapping("/joinSession")
+    public ResponseEntity<String> joinSession(@RequestParam String sessionId){
+        if (SessionManager.sessionExists(sessionId)){
+            return ResponseEntity.ok("Session joined successfully");
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Session not found");
+        }
     }
 
 
