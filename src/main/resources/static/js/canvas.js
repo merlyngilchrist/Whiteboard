@@ -960,6 +960,7 @@ function setTool(toolType) {
 
     // Color Picker stuff
         if (currentTool === toolTypes.COLOR_PICKER) {
+            //test
             addEventListener('mousemove', getPreviewColor);
         } else {
             removeEventListener('mousemove', getPreviewColor);
