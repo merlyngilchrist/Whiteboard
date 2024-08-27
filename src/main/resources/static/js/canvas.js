@@ -586,12 +586,15 @@ if (canvas.getContext) {
         document.body.removeChild(link);
     }
 
+    /**
+     *
+     * @param event
+     */
     function pickColorFromCanvas(event) {
         if (currentTool === toolTypes.COLOR_PICKER) {
             const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            context.moveTo(x, y);
+            const x = (event.clientX - rect.left) * (canvas.width / rect.width);  // Adjust for any scaling
+            const y = (event.clientY - rect.top) * (canvas.height / rect.height);  // Adjust for any scaling
             const imageData = context.getImageData(x, y, 1, 1);
             const pixel = imageData.data;
             const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
@@ -603,11 +606,14 @@ if (canvas.getContext) {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     function getPreviewColor(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        context.moveTo(x, y);
+        const x = (event.clientX - rect.left) * (canvas.width / rect.width);  // Adjust for any scaling
+        const y = (event.clientY - rect.top) * (canvas.height / rect.height);  // Adjust for any scaling
         const imageData = context.getImageData(x, y, 1, 1);
         const pixel = imageData.data;
         const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
@@ -616,6 +622,13 @@ if (canvas.getContext) {
         updatePreviewColor(hexColor);
     }
 
+    /**
+     *
+     * @param r
+     * @param g
+     * @param b
+     * @returns {string}
+     */
     function rgbToHex(r, g, b) {
         const componentToHex = (c) => c.toString(16).padStart(2, '0');
         return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
@@ -961,10 +974,10 @@ function setTool(toolType) {
     // Color Picker stuff
         if (currentTool === toolTypes.COLOR_PICKER) {
             //test
-            addEventListener('mousemove', getPreviewColor);
+            addEventListener("mousemove", getPreviewColor);
         } else {
-            removeEventListener('mousemove', getPreviewColor);
-            updatePreviewColor('transparent');
+            removeEventListener("mousemove", getPreviewColor);
+            updatePreviewColor("transparent");
         }
         // Hide penSizeMenu and cursorCircle with the use of the color picker or line
         hideElementByID("penSizeMenu", currentTool === toolTypes.COLOR_PICKER);
