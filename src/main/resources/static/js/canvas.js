@@ -392,69 +392,98 @@ if (canvas.getContext) {
         context.stroke(); // Apply the stroke to draw the shape
         changePenSize(pastPenSize);
         canvas.removeEventListener("mousemove", drawGhostShape);  // Remove the ghost drawing event
-        hideElementByID("squareGhostShape", true);
+        hideElementByID("ghostShape", true);
 
 
     }
 
-    /**
-     *
-     * @param event
-     */
     function drawGhostShape(event) {
-        hideElementByID("squareGhostShape", false);
         if (clickCount === 0) return;  // Only draw the ghost shape after the first click
 
+        const ghostShape = document.getElementById('ghostShape');
+        hideElementByHTMLObject(ghostShape, false);
+
+        // Reset shape classes
+        ghostShape.classList.remove('triangle');
+        ghostShape.style.borderRadius = '0%';
+
+        if (currentTool === toolTypes.CIRCLE) {
+            drawGhostCircle(event);
+        } else if (currentTool === toolTypes.SQUARE) {
+            drawGhostSquare(event);
+        } else if (currentTool === toolTypes.TRIANGLE) {
+            drawGhostTriangle(event);
+        }
+
+    }
+
+    function drawGhostCircle(event) {
         const x = event.clientX - rect.left; // X coordinate of the mouse
         const y = event.clientY - rect.top;  // Y coordinate of the mouse
+        const ghostShape = document.getElementById('ghostShape');
+        ghostShape.style.borderRadius = '50%';
+        const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+        centerObjectOnCords(ghostShape, lastX - radius, lastY - radius);
+        ghostShape.style.width = `${radius * 2}px`;
+        ghostShape.style.height = `${radius * 2}px`;
+    }
 
+    function drawGhostSquare(event) {
+        const x = event.clientX - rect.left; // X coordinate of the mouse
+        const y = event.clientY - rect.top;  // Y coordinate of the mouse
+        const ghostShape = document.getElementById('ghostShape');
 
-        switch (currentTool) {
-            case toolTypes.CIRCLE:
-                const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
-                context.beginPath();
-                context.arc(lastX, lastY, radius, 0, Math.PI * 2);
-                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
-                context.stroke();
-                break;
-
-            case toolTypes.SQUARE:
-                const squareGhostShape = document.getElementById('squareGhostShape');
-
-                //let width;
-                if (x > lastX) {
-                    squareGhostShape.style.left = `${lastX}px`;
-                    squareGhostShape.style.right = "auto";
-                } else {
-                    squareGhostShape.style.right = `${window.innerWidth - lastX}px`;
-                    squareGhostShape.style.left = "auto";
-                }
-
-                if (y > lastY) { //Cursor is below starting point
-                    squareGhostShape.style.top = `${lastY}px`;
-                    squareGhostShape.style.bottom = `auto`;
-                } else {
-                    squareGhostShape.style.bottom = `${window.innerHeight - lastY}px`;
-                    squareGhostShape.style.top = `auto`;
-                }
-                let width = Math.abs(lastX - x);
-                let height = Math.abs(lastY - y);
-                squareGhostShape.style.width = `${width}px`
-                squareGhostShape.style.height = `${height}px`
-
-                break;
-
-            case toolTypes.TRIANGLE:
-                context.beginPath();
-                const triangleTip = lastX - ((lastX - x) / 2);
-                context.moveTo(triangleTip, lastY);
-                context.lineTo(x, y);
-                context.lineTo(lastX, y);
-                context.closePath();
-                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
-                context.stroke();
-                break;
+        if (x > lastX) {
+            ghostShape.style.left = `${lastX}px`;
+            ghostShape.style.right = "auto";
+        } else {
+            ghostShape.style.right = `${window.innerWidth - lastX}px`;
+            ghostShape.style.left = "auto";
         }
+
+        if (y > lastY) {
+            ghostShape.style.top = `${lastY}px`;
+            ghostShape.style.bottom = "auto";
+        } else {
+            ghostShape.style.bottom = `${window.innerHeight - lastY}px`;
+            ghostShape.style.top = "auto";
+        }
+        let width = Math.abs(lastX - x);
+        let height = Math.abs(lastY - y);
+        ghostShape.style.width = `${width}px`;
+        ghostShape.style.height = `${height}px`;
+    }
+
+    function drawGhostTriangle(event) {
+        const x = event.clientX - rect.left; // X coordinate of the mouse
+        const y = event.clientY - rect.top;  // Y coordinate of the mouse
+        const ghostShape = document.getElementById('ghostShape');
+
+        const triangleBaseWidth = Math.abs(lastX - x);
+        const triangleHeight = Math.abs(lastY - y);
+
+        ghostShape.classList.add('triangle');  // Apply the triangle class
+
+        // Position the triangle's top-left corner
+        ghostShape.style.left = `${lastX}px`;
+        ghostShape.style.top = `${lastY}px`;
+
+        // Set triangle's borders
+        ghostShape.style.borderLeftWidth = `${triangleBaseWidth / 2}px`;
+        ghostShape.style.borderRightWidth = `${triangleBaseWidth / 2}px`;
+        ghostShape.style.borderBottomWidth = `${triangleHeight}px`;
+
+        // Ensure width and height are reset
+        ghostShape.style.width = '0';
+        ghostShape.style.height = '0';
+    }
+
+// Helper function to position elements
+    function centerObjectOnCords(object, x, y) {
+        object.style.left = `${x}px`;
+        object.style.top = `${y}px`;
+        object.style.right = `auto`;
+        object.style.bottom = `auto`;
     }
 
     /**
@@ -612,15 +641,9 @@ if (canvas.getContext) {
      */
     function pickColorFromCanvas(event) {
         if (currentTool === toolTypes.COLOR_PICKER) {
-            const rect = canvas.getBoundingClientRect();
-            const x = (event.clientX - rect.left) * (canvas.width / rect.width);  // Adjust for any scaling
-            const y = (event.clientY - rect.top) * (canvas.height / rect.height);  // Adjust for any scaling
-            const imageData = context.getImageData(x, y, 1, 1);
-            const pixel = imageData.data;
-            const pickedColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-            const rgbValues = pickedColor.match(/\d+/g).map(Number);
-            const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
-            changeColor(hexColor);
+            const color = getPreviewColor(event);
+            if (color.toUpperCase() === "#FFFFFF") return;
+            changeColor(color);
             canvas.removeEventListener('click', pickColorFromCanvas);
             selectPenTool();
         }
@@ -640,6 +663,7 @@ if (canvas.getContext) {
         const rgbValues = pickedColor.match(/\d+/g).map(Number);
         const hexColor = rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2]);
         updatePreviewColor(hexColor);
+        return hexColor;
     }
 
     /**
@@ -1013,7 +1037,7 @@ function setTool(toolType) {
             removeEventListener("mousemove", drawGhostShape);
             removeEventListener('mousedown', drawShape);
             removeEventListener('mouseup', drawShape);
-            hideElementByID("squareGhostShape", true);
+            hideElementByID("ghostShape", true);
         }
 
     if (currentTool === toolTypes.ERASER) {
@@ -1029,7 +1053,6 @@ function setTool(toolType) {
         removeEventListener("mousedown", drawLine);
         removeEventListener("mouseup", drawLine);
     }
-
-
+    
     clickCount = 0;
 }

@@ -313,13 +313,21 @@ button img {
 }
 
 
-#squareGhostShape {
+#ghostShape {
     display: block;
     position: absolute;
     pointer-events: none;
-    background-color: gray;
-    opacity: 50%;
-    border: grey solid 1px;
+    background-color: grey;
+    opacity: 30%;
+}
+
+#ghostShape.triangle {
+    width: 0;
+    height: 0;
+    background-color: transparent;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid gray; /* Adjust color as needed */
 }
 
 
