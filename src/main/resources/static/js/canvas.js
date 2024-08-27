@@ -6,6 +6,7 @@ const penSizeText = document.getElementById("penSizeText");
 let lastX, lastY;
 let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
 let penSize = 10;
+let lastPenSize;
 let fillShape = true;
 let buttons = [
     "penButton",
@@ -196,8 +197,6 @@ if (canvas.getContext) {
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mouseup", stopDrawing);
     canvas.addEventListener("mousemove", drawPen);
-    canvas.addEventListener("mousedown", drawShape);
-    canvas.addEventListener("click",drawLine);
     canvas.addEventListener("mouseleave", stopDrawing);
     /**
      *
@@ -205,9 +204,9 @@ if (canvas.getContext) {
     canvas.addEventListener("wheel",function(event){ // Smidgen of help from ChatGPT since I didn't know how it worked
         event.preventDefault()
         if (event.deltaY < 0){
-            changeSize(++penSize);
+            changePenSize(++penSize);
         } else {
-            changeSize(--penSize);
+            changePenSize(--penSize);
         }
     });
     /**
@@ -219,7 +218,7 @@ if (canvas.getContext) {
         * Ctrl + Y - REDO
         * P        - SELECT PEN
         * E        - SELECT ERASER
-        * F        - SELECT LINE
+        * F        - SELECT FILL
         * S        - SELECT SQUARE
         * C        - SELECT CIRCLE
         * D        - SELECT TRIANGLE
@@ -267,7 +266,7 @@ if (canvas.getContext) {
         }
     });
 
-    changeSize(penSize);
+    changePenSize(penSize);
     context.lineCap = "round";
     context.getContextAttributes().willReadFrequently = true;
     context.fillStyle = "white";
@@ -294,7 +293,7 @@ if (canvas.getContext) {
      * stops drawing on the canvas.
      */
     function stopDrawing() {
-        if (currentTool === toolTypes.PEN) {
+        if (currentTool === toolTypes.PEN || currentTool === toolTypes.ERASER) {
             drawing = false;
             lastX = null;
             lastY = null;
@@ -341,22 +340,24 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
             clickCount++;
-            //canvas.addEventListener("mousemove", drawGhostShape);  // Add the ghost drawing event
+            canvas.addEventListener('mousemove', drawGhostShape);  // Add the ghost drawing event
             return;
         }
+
+        const pastPenSize = penSize;
+        changePenSize(1);
+        context.beginPath();
 
         switch (currentTool) {
             case toolTypes.CIRCLE:
                 // Calculate the radius as the distance between the starting point and current point
                 const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
-
-                context.beginPath();  // Start a new path for the circle
                 context.arc(lastX, lastY, radius, 0, Math.PI * 2); // Draw the circle
 
                 break;
 
             case toolTypes.SQUARE:
-                context.beginPath();
+
                 context.moveTo(lastX, lastY); // Start at the first click position
 
                 // Draw the square
@@ -369,7 +370,6 @@ if (canvas.getContext) {
                 break;
 
             case toolTypes.TRIANGLE:
-                context.beginPath();
                 const triangleTip = lastX - ((lastX - x) / 2);
 
                 context.moveTo(triangleTip, lastY); // Start at the first click position
@@ -390,7 +390,11 @@ if (canvas.getContext) {
 
         clickCount = 0; // Reset the click count
         context.stroke(); // Apply the stroke to draw the shape
+        changePenSize(pastPenSize);
         canvas.removeEventListener("mousemove", drawGhostShape);  // Remove the ghost drawing event
+        hideElementByID("squareGhostShape", true);
+
+
     }
 
     /**
@@ -398,6 +402,7 @@ if (canvas.getContext) {
      * @param event
      */
     function drawGhostShape(event) {
+        hideElementByID("squareGhostShape", false);
         if (clickCount === 0) return;  // Only draw the ghost shape after the first click
 
         const x = event.clientX - rect.left; // X coordinate of the mouse
@@ -414,14 +419,29 @@ if (canvas.getContext) {
                 break;
 
             case toolTypes.SQUARE:
-                context.beginPath();
-                context.moveTo(lastX, lastY);
-                context.lineTo(x, lastY);
-                context.lineTo(x, y);
-                context.lineTo(lastX, y);
-                context.closePath();
-                context.strokeStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent stroke
-                context.stroke();
+                const squareGhostShape = document.getElementById('squareGhostShape');
+
+                //let width;
+                if (x > lastX) {
+                    squareGhostShape.style.left = `${lastX}px`;
+                    squareGhostShape.style.right = "auto";
+                } else {
+                    squareGhostShape.style.right = `${window.innerWidth - lastX}px`;
+                    squareGhostShape.style.left = "auto";
+                }
+
+                if (y > lastY) { //Cursor is below starting point
+                    squareGhostShape.style.top = `${lastY}px`;
+                    squareGhostShape.style.bottom = `auto`;
+                } else {
+                    squareGhostShape.style.bottom = `${window.innerHeight - lastY}px`;
+                    squareGhostShape.style.top = `auto`;
+                }
+                let width = Math.abs(lastX - x);
+                let height = Math.abs(lastY - y);
+                squareGhostShape.style.width = `${width}px`
+                squareGhostShape.style.height = `${height}px`
+
                 break;
 
             case toolTypes.TRIANGLE:
@@ -509,7 +529,7 @@ if (canvas.getContext) {
      * changes size of brush unless size is too big(>50) or small(<1), also updates ui to show correct size.
      * @param size size pen is being changed to.
      */
-    function changeSize(size) {
+    function changePenSize(size) {
         if (size < 1){
             size = 1;
         }
@@ -718,17 +738,17 @@ function selectLineTool() {
 
 
 /**
- * calls changeSize and adds 1 to penSize.
+ * calls changePenSize and adds 1 to penSize.
  */
 function increasePenSizeButton() {
-    changeSize(++penSize);
+    changePenSize(++penSize);
 }
 
 /**
- * calls changeSize and subtracts 1 to penSize.
+ * calls changePenSize and subtracts 1 to penSize.
  */
 function decreasePenSizeButton() {
-    changeSize(--penSize);
+    changePenSize(--penSize);
 }
 
 /**
@@ -780,7 +800,8 @@ function selectButton(buttonID) {
         }
     });
     changeColor(currentColor);
-    changeSize(penSize);
+    changePenSize(penSize);
+
 }
 
 /**
@@ -980,12 +1001,19 @@ function setTool(toolType) {
             updatePreviewColor("transparent");
         }
         // Hide penSizeMenu and cursorCircle with the use of the color picker or line
-        hideElementByID("penSizeMenu", currentTool === toolTypes.COLOR_PICKER);
-        //hideElementByID("cursorCircle", currentTool === toolTypes.COLOR_PICKER);
+        let currentToolIsShape = currentTool === toolTypes.CIRCLE || currentTool === toolTypes.SQUARE || currentTool === toolTypes.TRIANGLE;
+        hideElementByID("penSizeMenu", currentTool === toolTypes.COLOR_PICKER || currentToolIsShape);
+        hideElementByID("cursorCircle", currentToolIsShape);
 
     // Shape drawing tool stuff
-        if (currentTool !== toolTypes.CIRCLE || currentTool !== toolTypes.SQUARE || currentTool !== toolTypes.TRIANGLE) {
+        if (currentToolIsShape) {
+            addEventListener('mousedown', drawShape);
+            addEventListener('mouseup', drawShape);
+        } else {
             removeEventListener("mousemove", drawGhostShape);
+            removeEventListener('mousedown', drawShape);
+            removeEventListener('mouseup', drawShape);
+            hideElementByID("squareGhostShape", true);
         }
 
     if (currentTool === toolTypes.ERASER) {
@@ -993,6 +1021,15 @@ function setTool(toolType) {
     } else {
         displayColorOptions("false");
     }
+
+    if (currentTool === toolTypes.LINE) {
+        addEventListener("mousedown", drawLine);
+        addEventListener("mouseup", drawLine);
+    } else {
+        removeEventListener("mousedown", drawLine);
+        removeEventListener("mouseup", drawLine);
+    }
+
 
     clickCount = 0;
 }
