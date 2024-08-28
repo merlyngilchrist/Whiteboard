@@ -7,7 +7,7 @@ let lastX, lastY;
 let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
 let penSize = 10;
 let lastPenSize;
-let fillShape = false;
+let fillShape = true;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -341,10 +341,10 @@ if (canvas.getContext) {
             lastY = y;
             clickCount++;
             canvas.addEventListener('mousemove', drawGhostShape);
-            //saveCanvas();
             return;
         }
 
+        saveCanvas();
         const pastPenSize = penSize;
         changePenSize(1);
         context.beginPath();
@@ -501,8 +501,8 @@ if (canvas.getContext) {
             lastY = y;
             clickCount++;
             addEventListener('mousemove', drawGhostLine);
-            //saveCanvas();
         } else {
+            saveCanvas();
             context.beginPath();
             context.moveTo(lastX,lastY);
             context.lineTo(x,y);
