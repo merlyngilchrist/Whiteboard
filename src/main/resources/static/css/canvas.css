@@ -313,12 +313,16 @@ button img {
 }
 
 
-#ghostShape {
+#ghostShape, #ghostLine {
     display: block;
     position: absolute;
     pointer-events: none;
     background-color: grey;
     opacity: 30%;
+}
+
+#ghostLine {
+
 }
 
 #ghostShape.triangle {

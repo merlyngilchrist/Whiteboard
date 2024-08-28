@@ -499,13 +499,56 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
             clickCount++;
+            addEventListener('mousemove', drawGhostLine);
         } else {
             context.beginPath();
             context.moveTo(lastX,lastY);
             context.lineTo(x,y);
             context.stroke();
             clickCount = 0;
+            removeEventListener('mousemove', drawGhostLine);
+            hideElementByID('ghostLine', true);
         }
+    }
+
+    function drawGhostLine(event) {
+        const x = event.clientX - rect.left;  // X coordinate of the mouse
+        const y = event.clientY - rect.top;   // Y coordinate of the mouse
+        const ghostLine = document.getElementById('ghostLine');
+
+        hideElementByHTMLObject(ghostLine, false);
+
+        // Calculate the length and angle of the line
+        const dx = x - lastX;
+        const dy = y - lastY;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+        // Set the ghost line's size and position
+        ghostLine.style.width = `${length + penSize}px`;
+        ghostLine.style.height = `${penSize}px`;
+        ghostLine.style.borderRadius = `${penSize / 2}px`;
+        ghostLine.style.transform = `rotate(${angle}deg)`;
+        ghostLine.style.transformOrigin = '0 50%';
+
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        const xOffset = Math.cos(angle * (Math.PI / 180)); // X offset based on angle
+        const yOffset = Math.sin(angle * (Math.PI / 180)); // Y offset based on angle
+
+
+        const yCorrection = (angle === 0 || angle === 180)
+            ? penSize / 2
+            : (penSize / 2) * (1 - Math.abs(yOffset)) + (angle >= 0 && angle <= 180 ? penSize * yOffset : 0);
+
+        const leftPos = lastX - ((penSize / 2) * xOffset);
+        const topPos = lastY - (penSize * yOffset - yCorrection) - penSize;
+
+        ghostLine.style.left = `${leftPos}px`;
+        ghostLine.style.top = `${topPos}px`;
+        // It took 4 hours to do this math code. Please don't ask me how it works, I will cry.
     }
 
     /**
@@ -1052,7 +1095,8 @@ function setTool(toolType) {
     } else {
         removeEventListener("mousedown", drawLine);
         removeEventListener("mouseup", drawLine);
+        hideElementByID("ghostLine", true);
     }
-    
+
     clickCount = 0;
 }
