@@ -54,18 +54,19 @@ button, .menuItem {
 }
 
 .menuItem p {
-    display: block;
-    height: auto;
+    display: flex;
+    height: inherit;
     width: auto;
-    max-height: 40%;
+    padding-top: 0.5em;
     font-size: medium;
     pointer-events: none;
     user-select: none;
     text-align: center;
-    bottom: 10%;
+    flex-direction: column-reverse;
 }
 
 #penSizeItem {
+    height: 3.5%;
     top: 49.9%;
 }
 
@@ -131,6 +132,14 @@ button img {
     border-top-right-radius: 30%;
 }
 
+#toggleFillShapeButton {
+    right: 0;
+    left: auto;
+    top: 45%;
+    border-top-left-radius: 30%;
+    border-bottom-left-radius: 30%;
+}
+
 #increasePenSizeButton, #decreasePenSizeButton {
     right: 0;
     left: auto;
@@ -143,7 +152,7 @@ button img {
 
 #decreasePenSizeButton {
     border-bottom-left-radius: 30%;
-    top: 56%;
+    top: 53%;
 }
 
 #increasePenSizeButton:active {
@@ -201,7 +210,6 @@ button img {
 #colorButtonsContainer #colorMenuSetOne {
     left: auto;
     right: 11.1%;
-
 }
 
 .menuItem .colorCircle, #cursorCircle .colorCircle, .menuItem #currentColorCircle {

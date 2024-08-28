@@ -7,7 +7,7 @@ let lastX, lastY;
 let clickCount; //For distinguishing if click is for 1st or 2nd corner of shape
 let penSize = 10;
 let lastPenSize;
-let fillShape = true;
+let fillShape = false;
 let buttons = [
     "penButton",
     "eraserButton",
@@ -340,7 +340,8 @@ if (canvas.getContext) {
             lastX = x;
             lastY = y;
             clickCount++;
-            canvas.addEventListener('mousemove', drawGhostShape);  // Add the ghost drawing event
+            canvas.addEventListener('mousemove', drawGhostShape);
+            //saveCanvas();
             return;
         }
 
@@ -500,6 +501,7 @@ if (canvas.getContext) {
             lastY = y;
             clickCount++;
             addEventListener('mousemove', drawGhostLine);
+            //saveCanvas();
         } else {
             context.beginPath();
             context.moveTo(lastX,lastY);
@@ -1024,6 +1026,18 @@ function hideElementByHTMLObject(object, hide) {
     }
 }
 
+function toggleFillShape() {
+    fillShape = !fillShape;
+    const toggleFillShapeButton = document.getElementById("toggleFillShapeButton");
+    if (fillShape) {
+        toggleFillShapeButton.classList.remove("unselectedTool");
+        toggleFillShapeButton.classList.add("selectedTool");
+    } else {
+        toggleFillShapeButton.classList.add("unselectedTool");
+        toggleFillShapeButton.classList.remove("selectedTool");
+    }
+}
+
 /**
  * shows or hides redo button.
  * @param show "true" or "false" if object should be hidden.
@@ -1071,11 +1085,13 @@ function setTool(toolType) {
         let currentToolIsShape = currentTool === toolTypes.CIRCLE || currentTool === toolTypes.SQUARE || currentTool === toolTypes.TRIANGLE;
         hideElementByID("penSizeMenu", currentTool === toolTypes.COLOR_PICKER || currentToolIsShape);
         hideElementByID("cursorCircle", currentToolIsShape);
+        hideElementByID("toggleFillShapeButton", !currentToolIsShape)
 
     // Shape drawing tool stuff
         if (currentToolIsShape) {
             addEventListener('mousedown', drawShape);
             addEventListener('mouseup', drawShape);
+
         } else {
             removeEventListener("mousemove", drawGhostShape);
             removeEventListener('mousedown', drawShape);
