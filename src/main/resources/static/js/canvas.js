@@ -371,13 +371,26 @@ if (canvas.getContext) {
                 break;
 
             case toolTypes.TRIANGLE:
-                const triangleTip = lastX - ((lastX - x) / 2);
 
-                context.moveTo(triangleTip, lastY); // Start at the first click position
-                context.lineTo(x, y);
-                context.lineTo(lastX, y);
-                context.lineTo(triangleTip, lastY);
-                context.lineTo(x, y);
+                if (y < lastY) { // Quad 1 or 2
+                    let triangleTipX = (x + lastX) / 2;
+
+                    context.moveTo(triangleTipX, y); // Start at the tip of the triangle
+                    context.lineTo(x, lastY);                   // Draw to the first base point
+                    context.lineTo(lastX, lastY);               // Draw to the second base point
+                    context.lineTo(triangleTipX, y);
+                    context.lineTo(x, lastY);
+
+
+                } else {
+                    const triangleTip = lastX - ((lastX - x) / 2);
+                    context.moveTo(triangleTip, lastY); // Start at the first click position
+                    context.lineTo(x, y);
+                    context.lineTo(lastX, y);
+                    context.lineTo(triangleTip, lastY);
+                    context.lineTo(x, y);
+                }
+
 
                 break;
         }
@@ -459,15 +472,28 @@ if (canvas.getContext) {
         const x = event.clientX - rect.left; // X coordinate of the mouse
         const y = event.clientY - rect.top;  // Y coordinate of the mouse
         const ghostShape = document.getElementById('ghostShape');
+        if (x > lastX) {
+            ghostShape.style.left = `${lastX}px`;
+            ghostShape.style.right = "auto";
+        } else {
+            ghostShape.style.right = `${window.innerWidth - lastX}px`;
+            ghostShape.style.left = "auto";
+        }
+
+        if (y > lastY) {
+            ghostShape.style.top = `${lastY}px`;
+            ghostShape.style.bottom = "auto";
+        } else {
+            ghostShape.style.bottom = `${window.innerHeight - lastY}px`;
+            ghostShape.style.top = "auto";
+        }
 
         const triangleBaseWidth = Math.abs(lastX - x);
         const triangleHeight = Math.abs(lastY - y);
 
         ghostShape.classList.add('triangle');  // Apply the triangle class
 
-        // Position the triangle's top-left corner
-        ghostShape.style.left = `${lastX}px`;
-        ghostShape.style.top = `${lastY}px`;
+        // Position the triangle's top-left corner\
 
         // Set triangle's borders
         ghostShape.style.borderLeftWidth = `${triangleBaseWidth / 2}px`;
